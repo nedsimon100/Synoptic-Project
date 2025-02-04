@@ -51,15 +51,68 @@ public class ChunkGeneration : MonoBehaviour
         sY = Mathf.FloorToInt(transform.position.y / (chunkSize * standardScale))* (chunkSize * standardScale);
         lX =Mathf.FloorToInt(transform.position.x / (chunkSize * LargeScale))* (chunkSize * LargeScale);
         lY =Mathf.FloorToInt(transform.position.y/(chunkSize * LargeScale))* (chunkSize * LargeScale);
-
+        
         BLSH = generateNoiseHeights(sX* standardScale, sY* standardScale);
         TLSH = generateNoiseHeights(sX* standardScale, (sY + (chunkSize * standardScale)) * standardScale);
         BRSH = generateNoiseHeights((sX + (chunkSize * standardScale))* standardScale, sY* standardScale);
         TRSH = generateNoiseHeights((sX + (chunkSize * standardScale)) * standardScale, (sY + (chunkSize * standardScale)) * standardScale);
         BLLH = generateNoiseHeights(lX * LargeScale, lY * LargeScale);
+        if (lX * LargeScale==0&& lY * LargeScale == 0)
+        {
+            if(layer == 0)
+            {
+                BLLH.y = 0;
+            }
+            else if (layer == 1) 
+            {
+                BLLH.x = 0;
+            }
+
+        }
+        Debug.Log("bottom left big height = "+BLLH.y);
+        
         TLLH = generateNoiseHeights(lX * LargeScale,( lY+ (chunkSize * LargeScale)) * LargeScale);
+        if (lX * LargeScale == 0 && (lY + (chunkSize * LargeScale)) * LargeScale == 0)
+        {
+            if (layer == 0)
+            {
+                TLLH.y = 0;
+            }
+            else if (layer == 1)
+            {
+                TLLH.x = 0;
+            }
+
+        }
+        Debug.Log("TLLH = " + TLLH.y);
         BRLH = generateNoiseHeights((lX + (chunkSize * LargeScale)) * LargeScale, lY * LargeScale);
+        if ((lX + (chunkSize * LargeScale)) * LargeScale == 0 && lY * LargeScale == 0)
+        {
+            if (layer == 0)
+            {
+                BRLH.y = 0;
+            }
+            else if (layer == 1)
+            {
+                BRLH.x = 0;
+            }
+
+        }
+        Debug.Log("BRLH = " + BRLH.y);
         TRLH = generateNoiseHeights((lX + (chunkSize * LargeScale)) * LargeScale, (lY + (chunkSize * LargeScale)) * LargeScale);
+        if ((lX + (chunkSize * LargeScale)) * LargeScale == 0 && (lY + (chunkSize * LargeScale)) * LargeScale == 0)
+        {
+            if (layer == 0)
+            {
+                TRLH.y = 0;
+            }
+            else if (layer == 1)
+            {
+                TRLH.x = 0;
+            }
+
+        }
+        Debug.Log("TRLH = " + TRLH.y);
     }
     private Vector3 generateNoiseHeights(int x, int y)
     {
@@ -104,7 +157,7 @@ public class ChunkGeneration : MonoBehaviour
         float lowerLevelHeight = ((1 - (stanX)) * (1 - (stanY)) * BLSH.z + (stanX) * (1 - (stanY)) * BRSH.z + ((1 - (stanX)) * (stanY) * TLSH.z) + ((stanX) * (stanY) * TRSH.z))-layerDifference;
 
         
-        return new Vector2(standardScaleHeight - (LargeScaleDepth * largeScaleHeight),lowerLevelHeight - standardScaleHeight);
+        return new Vector2(standardScaleHeight - ((LargeScaleDepth * largeScaleHeight)),lowerLevelHeight - standardScaleHeight);//+(LargeScaleDepth/2)
 
 
     }
@@ -117,7 +170,7 @@ public class ChunkGeneration : MonoBehaviour
         //Debug.Log("Set Tile "+height);
         floor.SetTile(tilePosition, ground);
         floor.SetTileFlags(new Vector3Int(x, y, 0), TileFlags.None);
-        if (height.y > -0.1f && height.y < 0f && height.x>0)
+        if (height.y > 0 && height.x>0)
         {
             floor.SetColor(tilePosition, new Color(0,0,0));
         }

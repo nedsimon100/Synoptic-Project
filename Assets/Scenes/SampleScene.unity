@@ -384,8 +384,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   ChunkPrefab: {fileID: 8017195961938246641, guid: 972854f64563414459e6597732dc2adc, type: 3}
   LoadedChunks: []
-  chunkSize: 10
-  LoadDist: 5
+  chunkSize: 20
+  LoadDist: 2
   LastLoadPoint: {x: 0, y: 0, z: 0}
   Player: {fileID: 1974791235}
   Layer: 0

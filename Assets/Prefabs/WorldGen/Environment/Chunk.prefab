@@ -140,10 +140,10 @@ MonoBehaviour:
   LoadPoint: {x: 0, y: 0, z: 0}
   chunkSize: 10
   layer: 0
-  layerDifference: 0.25
-  LargeScale: 10000
+  layerDifference: 0.2
+  LargeScale: 100
   LargeScaleDepth: 1
-  standardScale: 50
+  standardScale: 10
   offsetX: 0
   offsetY: 0
   seed: 0
