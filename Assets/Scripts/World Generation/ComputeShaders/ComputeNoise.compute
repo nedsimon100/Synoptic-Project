@@ -1,0 +1,100 @@
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel firstMapGen
+#pragma kernel MidMapGen
+#pragma kernel FinalMapGen
+
+
+StructuredBuffer<float> heightMap;
+RWStructuredBuffer<float> Result;
+
+float3 chunkPosition;
+
+float2 BaseMapPosition;
+int BaseMapSize;
+float BaseMapScale;
+        
+int WorkMapSize;
+float workMapScale;
+float2 workMapPosition;
+float2 workMapoffset;
+float workMapAmplitude;
+float workMapGradientDampening;
+
+float GenRandomPoint(float2 pos)
+{
+    float2 noise = frac(sin(dot(pos, float2(12.9898 ,78.233) * 2.0)) * 43758.5453);
+    return abs(noise.x + noise.y) * 0.5;
+}
+float2 CubicInterpolate(float p0, float p1, float p2, float p3, float t)
+{
+    float a = (-p0 + 3 * p1 - 3 * p2 + p3) / 6.0;
+    float b = (p0 - 2 * p1 + p2) / 2.0;
+    float c = (-p0 + p2) / 2.0;
+    
+    return float2(((a * t + b) * t + c) * t + p1, (3 * a * t + 2 * b) * t + c); // x is height, y is gradient
+}
+
+float3 BiCubicInterpolate(float2 pos)   // x is height, (y,z) is gradient // bicubic interpolation needs fixing
+{
+    int2 basePos = int2(floor((pos - BaseMapPosition) / BaseMapScale));
+    float2 percentAcross = frac((pos - BaseMapPosition) / BaseMapScale);
+    
+
+    float2 heights[4];
+    for (int i = -1; i <= 2; i++)
+    {
+        int baseIndex = (basePos.y + i) * BaseMapSize + basePos.x;
+        heights[i + 1] = CubicInterpolate(
+            heightMap[baseIndex - 1],
+            heightMap[baseIndex],
+            heightMap[baseIndex + 1],
+            heightMap[baseIndex + 2],
+            percentAcross.x);
+    }
+    
+    return float3(CubicInterpolate(heights[0].x, heights[1].x, heights[2].x, heights[3].x, percentAcross.y).xy, CubicInterpolate(heights[0].y, heights[1].y, heights[2].y, heights[3].y, percentAcross.x).x);
+}
+
+[numthreads(8,8,1)]
+void firstMapGen (uint3 id : SV_DispatchThreadID)
+{
+    float2 pos = workMapPosition + (id.yx * workMapScale);
+    
+    float height = GenRandomPoint(pos + workMapoffset) * workMapAmplitude;
+    if (id.y < WorkMapSize && id.x < WorkMapSize)
+    {
+        Result[id.y * WorkMapSize + id.x] = height;
+    }
+}
+[numthreads(8, 8, 1)]
+void MidMapGen(uint3 id : SV_DispatchThreadID)
+{
+    float2 pos = workMapPosition + (id.yx * workMapScale);
+    
+    float3 ans = BiCubicInterpolate(pos);
+    float height = ans.x;
+    
+    float2 gradient = ans.yz;
+    if (id.y < WorkMapSize && id.x < WorkMapSize)
+    {
+        Result[id.y * WorkMapSize + id.x] = height + (GenRandomPoint(pos + workMapoffset) * workMapAmplitude) / ((length(gradient) * workMapGradientDampening) + 1);
+    }
+}
+[numthreads(8, 8, 1)]
+void FinalMapGen(uint3 id : SV_DispatchThreadID)
+{
+    float2 pos = workMapPosition + (id.yx * workMapScale);
+    
+    float height = BiCubicInterpolate(pos).x;
+   
+    if (id.y < WorkMapSize && id.x < WorkMapSize)
+    {
+        Result[id.y * (WorkMapSize) + id.x] = height; // this is correct
+    }
+
+
+}
+
+
+
+
