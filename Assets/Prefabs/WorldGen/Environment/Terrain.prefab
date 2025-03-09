@@ -111,4 +111,5 @@ MonoBehaviour:
   noise: {fileID: 0}
   terrain: {fileID: 0}
   heightData: []
-  depth: 100
+  depth: 1000
+  debugTexture: {fileID: 0}
