@@ -55,7 +55,7 @@ float3 BiCubicInterpolate(float2 pos)   // x is height, (y,z) is gradient // bic
     return float3(CubicInterpolate(heights[0].x, heights[1].x, heights[2].x, heights[3].x, percentAcross.y).xy, CubicInterpolate(heights[0].y, heights[1].y, heights[2].y, heights[3].y, percentAcross.x).x);
 }
 
-[numthreads(8,8,1)]
+[numthreads(16,16,1)]
 void firstMapGen (uint3 id : SV_DispatchThreadID)
 {
     float2 pos = workMapPosition + (id.yx * workMapScale);
@@ -66,7 +66,7 @@ void firstMapGen (uint3 id : SV_DispatchThreadID)
         Result[id.y * WorkMapSize + id.x] = height;
     }
 }
-[numthreads(8, 8, 1)]
+[numthreads(16, 16, 1)]
 void MidMapGen(uint3 id : SV_DispatchThreadID)
 {
     float2 pos = workMapPosition + (id.yx * workMapScale);
@@ -80,7 +80,7 @@ void MidMapGen(uint3 id : SV_DispatchThreadID)
         Result[id.y * WorkMapSize + id.x] = height + (GenRandomPoint(pos + workMapoffset) * workMapAmplitude) / ((length(gradient) * workMapGradientDampening) + 1);
     }
 }
-[numthreads(8, 8, 1)]
+[numthreads(16, 16, 1)]
 void FinalMapGen(uint3 id : SV_DispatchThreadID)
 {
     float2 pos = workMapPosition + (id.yx * workMapScale);

@@ -9,7 +9,7 @@ public class Noise : MonoBehaviour
     public bool debug;
     public int seed;
     public ComputeShader compNoise;
-    public int threadCountAndMapMult = 8;
+    public int threadCountAndMapMult = 16;
     private int[] mapItterations;
     //public GameObject debugMap;
     [System.Serializable]
@@ -283,7 +283,7 @@ public class Noise : MonoBehaviour
         compNoise.SetBuffer(2, "heightMap", finalHeightBuffer);
 
 
-        int dispatchSize = Mathf.CeilToInt((chunk.chunkSize + 1) / 8)+1;
+        int dispatchSize = Mathf.CeilToInt((chunk.chunkSize + 1) / threadCountAndMapMult)+1;
         compNoise.Dispatch(2, dispatchSize, dispatchSize, 1);
 
         currHeightBuffer.GetData(chunk.heightData);
