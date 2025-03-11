@@ -19,6 +19,7 @@ float2 workMapPosition;
 float2 workMapoffset;
 float workMapAmplitude;
 float workMapGradientDampening;
+float depth;
 
 float GenRandomPoint(float2 pos)
 {
@@ -58,7 +59,7 @@ float3 BiCubicInterpolate(float2 pos)   // x is height, (y,z) is gradient // bic
 [numthreads(16,16,1)]
 void firstMapGen (uint3 id : SV_DispatchThreadID)
 {
-    float2 pos = workMapPosition + (id.yx * workMapScale);
+    float2 pos = workMapPosition + (id.xy * workMapScale);
     
     float height = GenRandomPoint(pos + workMapoffset) * workMapAmplitude;
     if (id.y < WorkMapSize && id.x < WorkMapSize)
@@ -69,15 +70,15 @@ void firstMapGen (uint3 id : SV_DispatchThreadID)
 [numthreads(16, 16, 1)]
 void MidMapGen(uint3 id : SV_DispatchThreadID)
 {
-    float2 pos = workMapPosition + (id.yx * workMapScale);
+    float2 pos = workMapPosition + (id.xy * workMapScale);
     
     float3 ans = BiCubicInterpolate(pos);
     float height = ans.x;
     
     float2 gradient = ans.yz;
-    if (id.y < WorkMapSize && id.x < WorkMapSize)
+    if (id.x < WorkMapSize && id.y < WorkMapSize)
     {
-        Result[id.y * WorkMapSize + id.x] = height + (GenRandomPoint(pos + workMapoffset) * workMapAmplitude) / ((length(gradient)* 100 * workMapGradientDampening) + 1);
+        Result[id.y * WorkMapSize + id.x] = height + (GenRandomPoint(pos + workMapoffset) * workMapAmplitude) / ((length(gradient) * depth * workMapGradientDampening) + 1);
     }
 }
 [numthreads(16, 16, 1)]

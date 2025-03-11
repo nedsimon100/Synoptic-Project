@@ -45,7 +45,7 @@ public class WorldGenerator : MonoBehaviour
         public int mapsize;
         [Range(0f, 1f)]
         public float amplitude;
-        [Range(0f, 100f)]
+        [Range(0f, 10f)]
         public float gradientDampening;
         public Map(Map copyFrom)
         {
@@ -143,7 +143,6 @@ public class WorldGenerator : MonoBehaviour
                 WL.RemoveAt(i);
                 WL.Add(worklayer);
                 exists = true;
-
                 break;
 
             }
@@ -173,23 +172,24 @@ public class WorldGenerator : MonoBehaviour
     }
     public workingLayer getExistingMapInRange(ChunkGeneration chunk, workingLayer Worklayer)
     {
-        for (int i = Worklayer.ML.maps.Count - 1; i >= 0; i--)
+        for (int i = 0; i < Worklayer.ML.maps.Count; i++)
         {
             float range = ((Worklayer.ML.maps[i].mapsize * threadCountAndMapMult) - 3) * Worklayer.ML.maps[i].scale;
             Vector3 chunkoffset = (chunk.transform.position - new Vector3(chunk.chunkSize / 2, 0, chunk.chunkSize / 2)) - Worklayer.ML.maps[i].position;
             Debug.LogWarning("at " + i + " ||Range = " + range + " || Chunk Offset = " + chunkoffset.ToString());
-            if ((chunkoffset).x + chunk.chunkSize < range && (chunkoffset).x > 3 && (chunkoffset).z + chunk.chunkSize < range && (chunkoffset).z > 3)
+            if ((chunkoffset).x + chunk.chunkSize > range || (chunkoffset).x < 3 * Worklayer.ML.maps[i].scale || (chunkoffset).z + chunk.chunkSize > range || (chunkoffset).z < 3 * Worklayer.ML.maps[i].scale)
             {
-                Debug.LogError("Chunk: " + chunk.transform.position.ToString() + " -- In Range of map " + i);
-                return outputMaps(chunk, Worklayer, i + 1);
+                Debug.LogError("Chunk: " + chunk.transform.position.ToString() + " -- out of Range of map " + i);
+                return outputMaps(chunk, Worklayer, i);
             }
         }
-        return outputMaps(chunk, Worklayer, 0);
+        return outputMaps(chunk, Worklayer, Worklayer.ML.maps.Count);
     }
 
     public workingLayer outputMaps(ChunkGeneration chunk, workingLayer Worklayer, int startMap)
     {
-
+        chunk.usedMaps = new Vector3[Worklayer.ML.maps.Count];
+        compNoise.SetFloat("depth", chunk.depth);
         if (startMap == 0)
         {
             ComputeBuffer heightBuffer = new ComputeBuffer(Worklayer.ML.maps[0].mapsize * Worklayer.ML.maps[0].mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
@@ -200,10 +200,10 @@ public class WorldGenerator : MonoBehaviour
 
 
             Vector3 snappedPosition = new Vector3(
-            Mathf.Floor(chunk.transform.position.x / Worklayer.ML.maps[0].scale) * Worklayer.ML.maps[0].scale,
+            Mathf.RoundToInt(chunk.transform.position.x / Worklayer.ML.maps[0].scale) * Worklayer.ML.maps[0].scale,
             0,
-            Mathf.Floor(chunk.transform.position.z / Worklayer.ML.maps[0].scale) * Worklayer.ML.maps[0].scale
-        );
+            Mathf.RoundToInt(chunk.transform.position.z / Worklayer.ML.maps[0].scale) * Worklayer.ML.maps[0].scale
+            );
 
             float halfMapSize = (Worklayer.ML.maps[0].scale * Worklayer.ML.maps[0].mapsize * threadCountAndMapMult) / 2;
 
@@ -226,7 +226,7 @@ public class WorldGenerator : MonoBehaviour
             mapItterations[0]++;
             Debug.Log("Maps generated from Layer 0 = " + mapItterations[0]);
             heightBuffer.GetData(Worklayer.ML.maps[0].heightData);
-
+           
             startMap = 1;
             heightBuffer.Release();
         }
@@ -247,9 +247,9 @@ public class WorldGenerator : MonoBehaviour
             lastHeightBuffer.SetData(lastMap.heightData);
 
             Vector3 snappedPosition = new Vector3(
-                Mathf.Floor(chunk.transform.position.x / Worklayer.ML.maps[i].scale) * Worklayer.ML.maps[i].scale,
+                Mathf.RoundToInt(chunk.transform.position.x / Worklayer.ML.maps[i].scale) * Worklayer.ML.maps[i].scale,
                 0,
-                Mathf.Floor(chunk.transform.position.z / Worklayer.ML.maps[i].scale) * Worklayer.ML.maps[i].scale
+                Mathf.RoundToInt(chunk.transform.position.z / Worklayer.ML.maps[i].scale) * Worklayer.ML.maps[i].scale
             );
 
             float halfMapSize = (Worklayer.ML.maps[i].scale * Worklayer.ML.maps[i].mapsize * threadCountAndMapMult) / 2;
@@ -280,9 +280,12 @@ public class WorldGenerator : MonoBehaviour
 
             lastHeightBuffer.Release();
             heightBuffer.Release();
-
+            
         }
-
+        for (int i = 0; i < Worklayer.ML.maps.Count; i++)
+        {
+            chunk.usedMaps[i] = new Vector3(mapItterations[i], Worklayer.ML.maps[i].position.x, Worklayer.ML.maps[i].position.z);
+        }
         Map finalMap = Worklayer.ML.maps[Worklayer.ML.maps.Count - 1];
 
         ComputeBuffer currHeightBuffer = new ComputeBuffer((1 + chunk.chunkSize) * (1 + chunk.chunkSize), sizeof(float));

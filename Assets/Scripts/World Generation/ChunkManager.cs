@@ -12,7 +12,7 @@ public class ChunkManager : MonoBehaviour
     public GameObject Player;
     public int Layer;
     public Noise noiseFunction;
-    
+
     private void Start()
     {
         noiseFunction = this.GetComponent<Noise>();

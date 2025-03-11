@@ -18,6 +18,7 @@ public class ChunkGeneration : MonoBehaviour
     public Gradient floorColour;
     public int MaxPointsPerFrame = 100;
     public float seaLevel;
+    public Vector3[] usedMaps;
     public void drawMap(float[] heightData)
     {
         terrain = this.GetComponent<Terrain>();
@@ -56,7 +57,12 @@ public class ChunkGeneration : MonoBehaviour
         FloorTexture.Apply();
         terrain.terrainData.SetHeights(0, 0, heights);
         ApplyTextureToTerrain(FloorTexture);
+        
+    }
 
+    private void OnDestroy()
+    {
+        Destroy(FloorTexture);
     }
 
     private void ApplyTextureToTerrain(Texture2D texture)
