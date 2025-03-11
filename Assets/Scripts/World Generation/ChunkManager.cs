@@ -63,7 +63,6 @@ public class ChunkManager : MonoBehaviour
                     chunk.transform.parent = this.transform;
                     chunk.GetComponent<ChunkGeneration>().chunkSize = chunkSize;
                     chunk.GetComponent<ChunkGeneration>().layer = Layer;
-                    chunk.GetComponent<ChunkGeneration>().noise = noiseFunction;
                     LoadedChunks.Add(chunk);
                 }
             }

@@ -514,7 +514,6 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 1301101597}
-  - component: {fileID: 1301101596}
   - component: {fileID: 1301101598}
   m_Layer: 0
   m_Name: WorldGen
@@ -523,26 +522,6 @@ GameObject:
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
   m_IsActive: 1
---- !u!114 &1301101596
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 1301101594}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: d40c45622bc54fc4e8de57a52283da31, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: 
-  ChunkPrefab: {fileID: 6944893429850932268, guid: da6e6acca83d13e47a29ef3429ffa97e, type: 3}
-  LoadedChunks: []
-  chunkSize: 256
-  LoadDist: 3
-  LastLoadPoint: {x: 0, y: 0, z: 0}
-  Player: {fileID: 519420028}
-  Layer: 0
-  noiseFunction: {fileID: 1301101598}
 --- !u!4 &1301101597
 Transform:
   m_ObjectHideFlags: 0
@@ -567,47 +546,54 @@ MonoBehaviour:
   m_GameObject: {fileID: 1301101594}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: f5004f8d71b7ded41a47868fa25fc4b0, type: 3}
+  m_Script: {fileID: 11500000, guid: bf4f43eb059c2654598e0aff06b2ca98, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  debug: 0
+  maxChunksPerFrame: 1
+  chunkSize: 64
+  LoadDist: 5
+  Player: {fileID: 196427280}
   seed: 0
+  ChunkPrefab: {fileID: 6944893429850932268, guid: da6e6acca83d13e47a29ef3429ffa97e, type: 3}
+  LoadedChunks: []
+  LastLoadPoint: {x: 0, y: 0, z: 0}
+  Layer: 0
   compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
   threadCountAndMapMult: 16
+  maxLayersSaved: 1
   layers:
   - maps:
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 1000
-      mapsize: 50
+      scale: 640
+      mapsize: 20
       amplitude: 0.4
       gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 400
-      mapsize: 50
+      scale: 320
+      mapsize: 20
       amplitude: 0.3
-      gradientDampening: 20
+      gradientDampening: 5
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 200
-      mapsize: 50
+      scale: 64
+      mapsize: 20
       amplitude: 0.2
-      gradientDampening: 10
+      gradientDampening: 5
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 100
-      mapsize: 50
-      amplitude: 0.05
+      scale: 32
+      mapsize: 20
+      amplitude: 0.1
       gradientDampening: 5
     layerOffset: 0
     minLayer: 0
   WL: []
-  maxLayersSaved: 4
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
