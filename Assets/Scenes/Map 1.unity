@@ -576,21 +576,21 @@ MonoBehaviour:
       scale: 320
       mapsize: 20
       amplitude: 0.3
-      gradientDampening: 5
+      gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 64
       mapsize: 20
       amplitude: 0.2
-      gradientDampening: 5
+      gradientDampening: 10
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 32
       mapsize: 20
       amplitude: 0.1
-      gradientDampening: 5
+      gradientDampening: 1
     layerOffset: 0
     minLayer: 0
   WL: []

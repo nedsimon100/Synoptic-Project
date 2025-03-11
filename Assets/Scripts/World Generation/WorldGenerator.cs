@@ -199,11 +199,21 @@ public class WorldGenerator : MonoBehaviour
             Worklayer.ML.maps[0].heightData = new float[Worklayer.ML.maps[0].mapsize * Worklayer.ML.maps[0].mapsize * threadCountAndMapMult * threadCountAndMapMult];
 
 
-            Worklayer.ML.maps[0].position = new Vector3(Mathf.FloorToInt(chunk.transform.position.x / Worklayer.ML.maps[0].scale) * Worklayer.ML.maps[0].scale,
-                0, Mathf.FloorToInt(chunk.transform.position.z / Worklayer.ML.maps[0].scale) * Worklayer.ML.maps[0].scale)
-                - new Vector3((Worklayer.ML.maps[0].scale * Worklayer.ML.maps[0].mapsize * threadCountAndMapMult) / 2,
+            Vector3 snappedPosition = new Vector3(
+            Mathf.Floor(chunk.transform.position.x / Worklayer.ML.maps[0].scale) * Worklayer.ML.maps[0].scale,
+            0,
+            Mathf.Floor(chunk.transform.position.z / Worklayer.ML.maps[0].scale) * Worklayer.ML.maps[0].scale
+        );
+
+            float halfMapSize = (Worklayer.ML.maps[0].scale * Worklayer.ML.maps[0].mapsize * threadCountAndMapMult) / 2;
+
+            Vector3 offset = new Vector3(
+                halfMapSize,
                 Worklayer.layer * Worklayer.ML.layerOffset,
-                (Worklayer.ML.maps[0].scale * Worklayer.ML.maps[0].mapsize * threadCountAndMapMult) / 2);
+                halfMapSize
+            );
+
+            Worklayer.ML.maps[0].position = snappedPosition - offset;
             compNoise.SetFloat("workMapScale", Worklayer.ML.maps[0].scale);
             compNoise.SetVector("workMapPosition", new Vector2(Worklayer.ML.maps[0].position.x, Worklayer.ML.maps[0].position.z));
 
@@ -236,11 +246,21 @@ public class WorldGenerator : MonoBehaviour
             ComputeBuffer lastHeightBuffer = new ComputeBuffer(lastMap.mapsize * lastMap.mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
             lastHeightBuffer.SetData(lastMap.heightData);
 
-            Worklayer.ML.maps[i].position = new Vector3(Mathf.FloorToInt(chunk.transform.position.x / Worklayer.ML.maps[i].scale) * Worklayer.ML.maps[i].scale,
-                0, Mathf.FloorToInt(chunk.transform.position.z / Worklayer.ML.maps[i].scale) * Worklayer.ML.maps[i].scale)
-                - new Vector3((Worklayer.ML.maps[i].scale * Worklayer.ML.maps[i].mapsize * threadCountAndMapMult) / 2,
+            Vector3 snappedPosition = new Vector3(
+                Mathf.Floor(chunk.transform.position.x / Worklayer.ML.maps[i].scale) * Worklayer.ML.maps[i].scale,
+                0,
+                Mathf.Floor(chunk.transform.position.z / Worklayer.ML.maps[i].scale) * Worklayer.ML.maps[i].scale
+            );
+
+            float halfMapSize = (Worklayer.ML.maps[i].scale * Worklayer.ML.maps[i].mapsize * threadCountAndMapMult) / 2;
+
+            Vector3 offset = new Vector3(
+                halfMapSize,
                 Worklayer.layer * Worklayer.ML.layerOffset,
-                (Worklayer.ML.maps[i].scale * Worklayer.ML.maps[i].mapsize * threadCountAndMapMult) / 2);
+                halfMapSize
+            );
+
+            Worklayer.ML.maps[i].position = snappedPosition - offset;
 
             compNoise.SetFloat("BaseMapScale", lastMap.scale);
             compNoise.SetVector("BaseMapPosition", new Vector2(lastMap.position.x, lastMap.position.z));
