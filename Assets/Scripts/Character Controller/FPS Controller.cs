@@ -8,11 +8,13 @@ public class FPSController : MonoBehaviour
     public float fastSpeed;
     public float yRotation;
     public float xRotation;
+    public Rigidbody rb;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
     void Start()
     {
         Cursor.lockState = CursorLockMode.Locked;
         Cursor.visible = false;
+        rb = this.GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
@@ -26,10 +28,10 @@ public class FPSController : MonoBehaviour
     }
     public void move()
     {
-        float currspeed = Speed*Time.deltaTime;
+        float currspeed = Speed;
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            currspeed = fastSpeed*currspeed;
+            currspeed = fastSpeed;
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
@@ -38,7 +40,9 @@ public class FPSController : MonoBehaviour
         float xmove = Input.GetAxisRaw("Horizontal");
         float ymove = Input.GetAxisRaw("Vertical");
         Vector2 moveDir = new Vector2(xmove, ymove).normalized;
-        transform.position += (transform.forward * moveDir.y * currspeed)+(transform.right*moveDir.x*currspeed);
+        Vector3 moveSpeed = (transform.forward * moveDir.y * currspeed) + (transform.right * moveDir.x * currspeed);
+        rb.linearVelocity = new Vector3(moveSpeed.x,rb.linearVelocity.y,moveSpeed.z);
+        
 
     }
     public void rotation()

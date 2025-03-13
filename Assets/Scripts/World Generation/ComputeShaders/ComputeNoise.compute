@@ -2,6 +2,7 @@
 #pragma kernel firstMapGen
 #pragma kernel MidMapGen
 #pragma kernel FinalMapGen
+#pragma kernel BiomeGen
 
 
 StructuredBuffer<float> heightMap;
@@ -92,10 +93,35 @@ void FinalMapGen(uint3 id : SV_DispatchThreadID)
     {
         Result[id.y * (WorkMapSize) + id.x] = height; // this is correct
     }
-
-
 }
-
+StructuredBuffer<float3> BiomeMap;
+StructuredBuffer<float> TempMap;
+StructuredBuffer<float> HumidityMap;
+int biomeCount;
+RWStructuredBuffer<int> biomeResult;
+[numthreads(16,16,1)]
+void BiomeGen(uint3 id : SV_DispatchThreadID)
+{
+    float2 pos = float2(TempMap[id.y * (WorkMapSize) + id.x], HumidityMap[id.y * (WorkMapSize) + id.x]);
+    
+    float minDist=100;
+    int Biome = 0;
+    
+    for (int i = 0; i < biomeCount; i++)
+    {
+        float dist = length(pos - BiomeMap[i].xy);
+        if (dist < minDist)
+        {
+            Biome = i;
+            minDist = dist;
+        }
+    }
+    
+    if (id.y < WorkMapSize && id.x < WorkMapSize)
+    {
+        biomeResult[id.y * (WorkMapSize) + id.x] = Biome; // this is correct
+    }
+}
 
 
 

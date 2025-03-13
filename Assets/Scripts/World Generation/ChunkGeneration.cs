@@ -10,17 +10,17 @@ public class ChunkGeneration : MonoBehaviour
 {
     public int chunkSize;
     public int layer;
-
+    public int workLayer;
     public Terrain terrain;
-    public float[] heightData;
+
     public float depth = 100;
-    public Texture2D FloorTexture;
-    public Gradient floorColour;
-    public int MaxPointsPerFrame = 100;
-    public float seaLevel;
     public Vector3[] usedMaps;
-    public void drawMap(float[] heightData)
+    
+    public void drawMap(float[,] heightData, Texture2D FloorTexture)
     {
+        
+      
+
         terrain = this.GetComponent<Terrain>();
         TerrainData td = new TerrainData();
         td.heightmapResolution = chunkSize +1;
@@ -32,38 +32,14 @@ public class ChunkGeneration : MonoBehaviour
             Material terrainMaterial = new Material(Shader.Find("Standard"));
             terrain.materialTemplate = terrainMaterial;
         }
-        
-        
-        float[,] heights = new float[terrain.terrainData.heightmapResolution, terrain.terrainData.heightmapResolution];
-    
-        FloorTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
-        for (int x = 0; x < (chunkSize + 1); x++)
-        {
-            for (int y = 0; y < (chunkSize + 1); y++)
-            {
-                if(heightData[y * (chunkSize + 1) + x] < seaLevel)
-                {
-                    heights[x, y] = (seaLevel-0.05f) + (heightData[y * (chunkSize + 1) + x] / (seaLevel/0.05f));
-                }
-                else
-                {
-                    heights[x, y] = heightData[y * (chunkSize + 1) + x];
-                }
-                FloorTexture.SetPixel(y, x, floorColour.Evaluate(heightData[y * (chunkSize + 1) + x]));
-   
-            }
-        }
-        
-        FloorTexture.Apply();
-        terrain.terrainData.SetHeights(0, 0, heights);
+
+
+        terrain.terrainData.SetHeights(0, 0, heightData);
         ApplyTextureToTerrain(FloorTexture);
-        
+
+        this.GetComponent<TerrainCollider>().terrainData = terrain.terrainData;
     }
 
-    private void OnDestroy()
-    {
-        Destroy(FloorTexture);
-    }
 
     private void ApplyTextureToTerrain(Texture2D texture)
     {
