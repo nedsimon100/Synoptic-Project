@@ -47,8 +47,8 @@ public class FPSController : MonoBehaviour
     }
     public void rotation()
     {
-        float mouseX = Input.GetAxisRaw("Mouse X") * Time.deltaTime * xSens;
-        float mouseY = Input.GetAxisRaw("Mouse Y") * Time.deltaTime * ySens;
+        float mouseX = Input.GetAxisRaw("Mouse X") * xSens;
+        float mouseY = Input.GetAxisRaw("Mouse Y") * ySens;
 
         yRotation += mouseX;
         xRotation -= mouseY;

@@ -3,7 +3,7 @@
 #pragma kernel MidMapGen
 #pragma kernel FinalMapGen
 #pragma kernel BiomeGen
-
+#pragma kernel MapComparison
 
 StructuredBuffer<float> heightMap;
 RWStructuredBuffer<float> Result;
@@ -120,6 +120,20 @@ void BiomeGen(uint3 id : SV_DispatchThreadID)
     if (id.y < WorkMapSize && id.x < WorkMapSize)
     {
         biomeResult[id.y * (WorkMapSize) + id.x] = Biome; // this is correct
+    }
+}
+float compMapMult;
+RWStructuredBuffer<float> compResult;
+[numthreads(16, 16, 1)]
+void MapComparison(uint3 id : SV_DispatchThreadID)
+{
+    float2 pos = float2(TempMap[id.y * (WorkMapSize) + id.x], HumidityMap[id.y * (WorkMapSize) + id.x]);
+    
+    float diff = pos.x - (((pos.y - 0.5) * compMapMult)+0.5);
+    
+    if (id.y < WorkMapSize && id.x < WorkMapSize)
+    {
+        compResult[id.y * (WorkMapSize) + id.x] = diff; // this is correct
     }
 }
 
