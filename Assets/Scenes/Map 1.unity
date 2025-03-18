@@ -591,12 +591,13 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxChunksPerFrame: 2
-  chunkSize: 128
+  chunkSize: 64
   LoadDist: 5
   deletionDist: 10
   Player: {fileID: 196427280}
   seed: 0
-  ChunkPrefab: {fileID: 6944893429850932268, guid: da6e6acca83d13e47a29ef3429ffa97e, type: 3}
+  ChunkPrefab: {fileID: 1432234054492279794, guid: 972854f64563414459e6597732dc2adc, type: 3}
+  ChunkPrefab2: {fileID: 1432234054492279794, guid: 972854f64563414459e6597732dc2adc, type: 3}
   LoadedChunks: []
   LastLoadPoint: {x: 0, y: 0, z: 0}
   Layer: 0
@@ -608,9 +609,9 @@ MonoBehaviour:
     heightData: []
     scale: 1500
     mapsize: 50
-    amplitude: 0.75
+    amplitude: 0.6
     gradientDampening: 0
-  baseWorldSeaLevel: 0.2
+  baseWorldSeaLevel: 0.1
   compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
   threadCountAndMapMult: 16
   maxLayersSaved: 1
@@ -1124,7 +1125,7 @@ MonoBehaviour:
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 300
+      scale: 500
       mapsize: 50
       amplitude: 0.2
       gradientDampening: 0
@@ -1154,14 +1155,14 @@ MonoBehaviour:
       heightData: []
       scale: 25
       mapsize: 50
-      amplitude: 0.02
+      amplitude: 0.0125
       gradientDampening: 1
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 10
       mapsize: 50
-      amplitude: 0.01
+      amplitude: 0.0125
       gradientDampening: 4
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}

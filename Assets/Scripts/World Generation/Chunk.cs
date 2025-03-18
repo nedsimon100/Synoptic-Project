@@ -3,62 +3,58 @@ using UnityEngine;
 
 public class Chunk : MonoBehaviour
 {
-    public GameObject chunkPrefab;
 
+    public Terrain T1;
+    public TerrainCollider TC1;
+
+    public Terrain T2;
+    public TerrainCollider TC2;
 
     public int chunkSize;
+    public float depth;
+
     public int layer;
 
-    public Terrain terrain;
-    public float[] heightData;
-    public float depth = 100;
-    private Texture2D FloorTexture;
-    public Gradient floorColour;
-
-    public float seaLevel;
-    public void GenerateMap(float[] heightData)
+    public Vector3[] usedMaps;
+    public void drawMap(float[,] heightData, Texture2D FloorTexture, float[,] heightData2,  bool[,] holeArray, Texture2D Texture2)
     {
-        terrain = this.GetComponent<Terrain>();
         TerrainData td = new TerrainData();
         td.heightmapResolution = chunkSize + 1;
         td.size = new Vector3(chunkSize, depth, chunkSize);
-        terrain.terrainData = td;
-        this.GetComponent<Terrain>().terrainData = terrain.terrainData;
+        T1.terrainData = td;
+        TerrainData td2 = new TerrainData();
+        td2.heightmapResolution = chunkSize + 1;
+        td2.size = new Vector3(chunkSize, depth, chunkSize);
+        T2.terrainData = td2;
+        
+        T2.terrainData.SetHeights(0, 0, heightData2);
+        T2.terrainData.SetHoles(0, 0, holeArray);
+
+        T1.terrainData.SetHeights(0, 0, heightData);
+
+        ApplyTextureToTerrain(FloorTexture,T1);
+        ApplyTextureToTerrain(Texture2, T2);
+
+        TC1.terrainData = T1.terrainData;
+
+        if(layer == 0)
+        {
+            TC2.enabled = false;
+        }
+        else
+        {
+            TC2.terrainData = T2.terrainData;
+        }
+    }
+
+
+    private void ApplyTextureToTerrain(Texture2D texture, Terrain terrain)
+    {
         if (terrain.materialTemplate == null)
         {
             Material terrainMaterial = new Material(Shader.Find("Standard"));
             terrain.materialTemplate = terrainMaterial;
         }
-
-
-        float[,] heights = new float[terrain.terrainData.heightmapResolution, terrain.terrainData.heightmapResolution];
-        // Debug.Log(chunkSize);
-        // Debug.Log(terrain.terrainData.size);
-        // Debug.Log(terrain.terrainData.heightmapResolution);
-        FloorTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
-        for (int x = 0; x < (chunkSize + 1); x++)
-        {
-            for (int y = 0; y < (chunkSize + 1); y++)
-            {
-                if (heightData[y * (chunkSize + 1) + x] < seaLevel)
-                {
-                    heights[x, y] = (seaLevel - 0.05f) + (heightData[y * (chunkSize + 1) + x] / (seaLevel / 0.05f));
-                }
-                else
-                {
-                    heights[x, y] = heightData[y * (chunkSize + 1) + x];
-                }
-                FloorTexture.SetPixel(y, x, floorColour.Evaluate(heightData[y * (chunkSize + 1) + x]));
-            }
-        }
-
-        FloorTexture.Apply();
-        terrain.terrainData.SetHeights(0, 0, heights);
-        ApplyTextureToTerrain(FloorTexture);
-    }
-
-    private void ApplyTextureToTerrain(Texture2D texture)
-    {
         TerrainLayer terrainLayer = new TerrainLayer();
         terrainLayer.diffuseTexture = texture;
         terrainLayer.tileSize = new Vector2(chunkSize, chunkSize);
