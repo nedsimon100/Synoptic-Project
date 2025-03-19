@@ -12,11 +12,10 @@ public class WorldGenerator : MonoBehaviour
     public GameObject Player;
     public int seed;
     public GameObject ChunkPrefab;
-    public GameObject ChunkPrefab2;
     public List<GameObject> LoadedChunks = new List<GameObject>();
     public Vector3 LastLoadPoint = Vector3.zero;
     public int Layer;
-    public float Depth;
+
     public float layerOffset;
 
     public Map baseWorldMap;
@@ -28,7 +27,8 @@ public class WorldGenerator : MonoBehaviour
     private int[] mapItterations;
 
     [Header("Layer Settings")]
-
+    [Range(4, 1000)]
+    public int mapsize;
     [Range(1, 10)]
     public int maxLayersSaved;
     public List<MapLayer> layers = new List<MapLayer>();
@@ -47,16 +47,14 @@ public class WorldGenerator : MonoBehaviour
 
         [Range(1, 10000)]
         public float scale;
-        [Range(4, 1000)]
-        public int mapsize;
-        [Range(0f, 1f)]
+        
+        [Range(0f, 1000f)]
         public float amplitude;
         [Range(0f, 10f)]
         public float gradientDampening;
         public Map(Map copyFrom)
         {
             scale = copyFrom.scale;
-            mapsize = copyFrom.mapsize;
             amplitude = copyFrom.amplitude;
             gradientDampening = copyFrom.gradientDampening;
             heightData = copyFrom.heightData;
@@ -86,16 +84,27 @@ public class WorldGenerator : MonoBehaviour
         [System.Serializable]
     public class MapLayer
     {
-        public MapLayer(MapLayer copyFrom)
+        public MapLayer(MapLayer copyFrom, Map BaseMap)
         {
+            
             minLayer = copyFrom.minLayer;
             maps = new List<Map>();
             biomes = new List<Biome>();
             compMap1 = copyFrom.compMap1;
             compMap2 = copyFrom.compMap2;
+            Depth = BaseMap.amplitude;
             foreach (Map map in copyFrom.maps)
             {
                 maps.Add(new Map(map));
+                Depth += map.amplitude;
+            }
+            for(int e = 0; e< maps.Count;e++)
+            {
+                if (e > 0)
+                {
+                    maps[e].scale = Mathf.Clamp(maps[e].scale, 0, maps[e - 1].scale);
+                }
+                maps[e].amplitude = maps[e].amplitude/Depth;
             }
             biomeBuffer = new Vector3[copyFrom.biomes.Count];
             int i = 0;
@@ -111,7 +120,9 @@ public class WorldGenerator : MonoBehaviour
         public Map compMap1;
         public Map compMap2;
 
-
+        [HideInInspector]
+        public float Depth;
+        [HideInInspector]
         public Vector3[] biomeBuffer;
 
         public int minLayer;
@@ -127,6 +138,7 @@ public class WorldGenerator : MonoBehaviour
         }
         LastLoadPoint = Player.transform.position;
         LastLoadPoint.y = 0;
+        chunkSize = Mathf.ClosestPowerOfTwo(chunkSize);
         DeleteChunks();
         StartCoroutine(loadChunks());
     }
@@ -146,7 +158,7 @@ public class WorldGenerator : MonoBehaviour
     [System.Serializable]
     public class workingLayer
     {
-        public workingLayer(int currLayer, List<MapLayer> mls)
+        public workingLayer(int currLayer, List<MapLayer> mls,Map BaseMap)
         {
             layer = currLayer;
             ML = mls[0];
@@ -154,7 +166,7 @@ public class WorldGenerator : MonoBehaviour
             {
                 if (currLayer >= mls[i].minLayer)
                 {
-                    ML = new MapLayer(mls[i]);
+                    ML = new MapLayer(mls[i], BaseMap);
                     break;
                 }
             }
@@ -193,7 +205,7 @@ public class WorldGenerator : MonoBehaviour
             {
                 WL.RemoveAt(0);
             }
-            worklayer = generateOffsets(new workingLayer(chunk.layer, layers));
+            worklayer = generateOffsets(new workingLayer(chunk.layer, layers, baseWorldMap));
             WL.Add(outputMaps(chunk, worklayer, 0));
         }
 
@@ -201,9 +213,10 @@ public class WorldGenerator : MonoBehaviour
 
     public workingLayer generateOffsets(workingLayer worklayer)
     {
+        Random.InitState(seed + worklayer.layer);
         worklayer.ML.compMap1.offset = new Vector3(Random.Range(0, 99999), Random.Range(0, 99999));
         worklayer.ML.compMap2.offset = new Vector3(Random.Range(0, 99999), Random.Range(0, 99999));
-        Random.InitState(seed + worklayer.layer);
+
         for (int i = worklayer.ML.maps.Count - 1; i >= 0; i--)
         {
             worklayer.ML.maps[i].offset = new Vector3(Random.Range(0, 99999), Random.Range(0, 99999));
@@ -225,7 +238,7 @@ public class WorldGenerator : MonoBehaviour
     }
     public bool checkMapRange(Chunk chunk, Map map)
     {
-        float range = ((map.mapsize * threadCountAndMapMult) - 3) * map.scale;
+        float range = ((mapsize * threadCountAndMapMult) - 3) * map.scale;
         Vector3 chunkoffset = (chunk.transform.position - new Vector3(chunk.chunkSize / 2, 0, chunk.chunkSize / 2)) -map.position;
         if ((chunkoffset).x + chunk.chunkSize > range || (chunkoffset).x < 3 * map.scale || (chunkoffset).z + chunk.chunkSize > range || (chunkoffset).z < 3 * map.scale)
         {
@@ -274,14 +287,14 @@ public class WorldGenerator : MonoBehaviour
 
     public int[] biomes(Chunk chunk, workingLayer Worklayer)
     {
-        float range = ((Worklayer.ML.compMap1.mapsize * threadCountAndMapMult) - 3) * Worklayer.ML.compMap1.scale;
+        float range = ((mapsize * threadCountAndMapMult) - 3) * Worklayer.ML.compMap1.scale;
         Vector3 chunkoffset = (chunk.transform.position - new Vector3(chunk.chunkSize / 2, 0, chunk.chunkSize / 2)) - Worklayer.ML.compMap1.position;
         if ((chunkoffset).x + chunk.chunkSize > range || (chunkoffset).x < 3 * Worklayer.ML.compMap1.scale || (chunkoffset).z + chunk.chunkSize > range || (chunkoffset).z < 3 * Worklayer.ML.compMap1.scale)
         {
             setShaderValuesK1(Worklayer.ML.compMap1, chunk);
         }
 
-        range = ((Worklayer.ML.compMap2.mapsize * threadCountAndMapMult) - 3) * Worklayer.ML.compMap2.scale;
+        range = ((mapsize * threadCountAndMapMult) - 3) * Worklayer.ML.compMap2.scale;
         chunkoffset = (chunk.transform.position - new Vector3(chunk.chunkSize / 2, 0, chunk.chunkSize / 2)) - Worklayer.ML.compMap2.position;
         if ((chunkoffset).x + chunk.chunkSize > range || (chunkoffset).x < 3 * Worklayer.ML.compMap2.scale || (chunkoffset).z + chunk.chunkSize > range || (chunkoffset).z < 3 * Worklayer.ML.compMap2.scale)
         {
@@ -290,7 +303,7 @@ public class WorldGenerator : MonoBehaviour
 
 
         ComputeBuffer currTempBuffer = new ComputeBuffer((1 + chunk.chunkSize) * (1 + chunk.chunkSize), sizeof(float));
-        ComputeBuffer prevTempBuffer = new ComputeBuffer(Worklayer.ML.compMap1.mapsize * Worklayer.ML.compMap1.mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
+        ComputeBuffer prevTempBuffer = new ComputeBuffer(mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
         prevTempBuffer.SetData(Worklayer.ML.compMap1.heightData);
 
         compNoise.SetFloat("BaseMapScale", Worklayer.ML.compMap1.scale);
@@ -298,7 +311,7 @@ public class WorldGenerator : MonoBehaviour
         compNoise.SetFloat("workMapScale", 1);
         compNoise.SetVector("workMapPosition", new Vector2(chunk.transform.position.x - (chunk.chunkSize / 2), chunk.transform.position.z - (chunk.chunkSize / 2)));
         compNoise.SetInt("WorkMapSize", chunk.chunkSize + 1);
-        compNoise.SetInt("BaseMapSize", Worklayer.ML.compMap1.mapsize * threadCountAndMapMult);
+        compNoise.SetInt("BaseMapSize", mapsize * threadCountAndMapMult);
         compNoise.SetBuffer(2, "Result", currTempBuffer);
         compNoise.SetBuffer(2, "heightMap", prevTempBuffer);
 
@@ -309,7 +322,7 @@ public class WorldGenerator : MonoBehaviour
 
 
         ComputeBuffer currHumidityBuffer = new ComputeBuffer((1 + chunk.chunkSize) * (1 + chunk.chunkSize), sizeof(float));
-        ComputeBuffer prevHumidityBuffer = new ComputeBuffer(Worklayer.ML.compMap2.mapsize * Worklayer.ML.compMap2.mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
+        ComputeBuffer prevHumidityBuffer = new ComputeBuffer(mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
         prevHumidityBuffer.SetData(Worklayer.ML.compMap2.heightData);
 
         compNoise.SetFloat("BaseMapScale", Worklayer.ML.compMap2.scale);
@@ -317,7 +330,7 @@ public class WorldGenerator : MonoBehaviour
         compNoise.SetFloat("workMapScale", 1);
         compNoise.SetVector("workMapPosition", new Vector2(chunk.transform.position.x - (chunk.chunkSize / 2), chunk.transform.position.z - (chunk.chunkSize / 2)));
         compNoise.SetInt("WorkMapSize", chunk.chunkSize + 1);
-        compNoise.SetInt("BaseMapSize", Worklayer.ML.compMap2.mapsize * threadCountAndMapMult);
+        compNoise.SetInt("BaseMapSize", mapsize * threadCountAndMapMult);
         compNoise.SetBuffer(2, "Result", currHumidityBuffer);
         compNoise.SetBuffer(2, "heightMap", prevHumidityBuffer);
 
@@ -332,14 +345,14 @@ public class WorldGenerator : MonoBehaviour
     }
     public float[] caves(Chunk chunk, workingLayer Worklayer)
     {
-        float range = ((Worklayer.ML.compMap1.mapsize * threadCountAndMapMult) - 3) * Worklayer.ML.compMap1.scale;
+        float range = ((mapsize * threadCountAndMapMult) - 3) * Worklayer.ML.compMap1.scale;
         Vector3 chunkoffset = (chunk.transform.position - new Vector3(chunk.chunkSize / 2, 0, chunk.chunkSize / 2)) - Worklayer.ML.compMap1.position;
         if ((chunkoffset).x + chunk.chunkSize > range || (chunkoffset).x < 3 * Worklayer.ML.compMap1.scale || (chunkoffset).z + chunk.chunkSize > range || (chunkoffset).z < 3 * Worklayer.ML.compMap1.scale)
         {
             setShaderValuesK1(Worklayer.ML.compMap1, chunk);
         }
 
-        range = ((Worklayer.ML.compMap2.mapsize * threadCountAndMapMult) - 3) * Worklayer.ML.compMap2.scale;
+        range = ((mapsize * threadCountAndMapMult) - 3) * Worklayer.ML.compMap2.scale;
         chunkoffset = (chunk.transform.position - new Vector3(chunk.chunkSize / 2, 0, chunk.chunkSize / 2)) - Worklayer.ML.compMap2.position;
         if ((chunkoffset).x + chunk.chunkSize > range || (chunkoffset).x < 3 * Worklayer.ML.compMap2.scale || (chunkoffset).z + chunk.chunkSize > range || (chunkoffset).z < 3 * Worklayer.ML.compMap2.scale)
         {
@@ -348,7 +361,7 @@ public class WorldGenerator : MonoBehaviour
 
 
         ComputeBuffer currTempBuffer = new ComputeBuffer((1 + chunk.chunkSize) * (1 + chunk.chunkSize), sizeof(float));
-        ComputeBuffer prevTempBuffer = new ComputeBuffer(Worklayer.ML.compMap1.mapsize * Worklayer.ML.compMap1.mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
+        ComputeBuffer prevTempBuffer = new ComputeBuffer(mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
         prevTempBuffer.SetData(Worklayer.ML.compMap1.heightData);
 
         compNoise.SetFloat("BaseMapScale", Worklayer.ML.compMap1.scale);
@@ -356,7 +369,7 @@ public class WorldGenerator : MonoBehaviour
         compNoise.SetFloat("workMapScale", 1);
         compNoise.SetVector("workMapPosition", new Vector2(chunk.transform.position.x - (chunk.chunkSize / 2), chunk.transform.position.z - (chunk.chunkSize / 2)));
         compNoise.SetInt("WorkMapSize", chunk.chunkSize + 1);
-        compNoise.SetInt("BaseMapSize", Worklayer.ML.compMap1.mapsize * threadCountAndMapMult);
+        compNoise.SetInt("BaseMapSize", mapsize * threadCountAndMapMult);
         compNoise.SetBuffer(2, "Result", currTempBuffer);
         compNoise.SetBuffer(2, "heightMap", prevTempBuffer);
 
@@ -367,7 +380,7 @@ public class WorldGenerator : MonoBehaviour
 
 
         ComputeBuffer currHumidityBuffer = new ComputeBuffer((1 + chunk.chunkSize) * (1 + chunk.chunkSize), sizeof(float));
-        ComputeBuffer prevHumidityBuffer = new ComputeBuffer(Worklayer.ML.compMap2.mapsize * Worklayer.ML.compMap2.mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
+        ComputeBuffer prevHumidityBuffer = new ComputeBuffer(mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
         prevHumidityBuffer.SetData(Worklayer.ML.compMap2.heightData);
 
         compNoise.SetFloat("BaseMapScale", Worklayer.ML.compMap2.scale);
@@ -375,7 +388,7 @@ public class WorldGenerator : MonoBehaviour
         compNoise.SetFloat("workMapScale", 1);
         compNoise.SetVector("workMapPosition", new Vector2(chunk.transform.position.x - (chunk.chunkSize / 2), chunk.transform.position.z - (chunk.chunkSize / 2)));
         compNoise.SetInt("WorkMapSize", chunk.chunkSize + 1);
-        compNoise.SetInt("BaseMapSize", Worklayer.ML.compMap2.mapsize * threadCountAndMapMult);
+        compNoise.SetInt("BaseMapSize", mapsize * threadCountAndMapMult);
         compNoise.SetBuffer(2, "Result", currHumidityBuffer);
         compNoise.SetBuffer(2, "heightMap", prevHumidityBuffer);
 
@@ -396,6 +409,9 @@ public class WorldGenerator : MonoBehaviour
         bool[,] water = new bool[(chunkSize), (chunkSize)];
         Texture2D SurfaceTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
         Texture2D WaterTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
+        chunk.depth = workLayer.ML.Depth+baseWorldMap.amplitude;
+        float currBaseAmp = baseWorldMap.amplitude / chunk.depth;
+        
         for (int x = 0; x < (chunkSize + 1); x++)
         {
             for (int y = 0; y < (chunkSize + 1); y++)
@@ -403,28 +419,45 @@ public class WorldGenerator : MonoBehaviour
                 int biomeIndex = biomeData[y * (chunkSize + 1) + x];
                 Biome bio = workLayer.ML.biomes[biomeIndex];
 
+                float currBaseHeight = (baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.amplitude) * currBaseAmp;
+                float h = currBaseHeight + heightData[y * (chunkSize + 1) + x];
 
-                float h = baseWorldHeight[y * (chunkSize + 1) + x] + heightData[y * (chunkSize + 1) + x];
-                float currSeaLevel = baseWorldSeaLevel * (1 - (baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.amplitude));// *(1/(1-baseWorldMap.amplitude));
+                float currSeaLevel = baseWorldSeaLevel;
 
-                if (heightData[y * (chunkSize + 1) + x] < currSeaLevel)
+                if (currBaseHeight > currSeaLevel)
+                {
+                    currSeaLevel = currBaseHeight + (baseWorldSeaLevel * (currBaseHeight - baseWorldSeaLevel) / (currBaseAmp - baseWorldSeaLevel));
+                }
+                
+               
+
+                if (h < currSeaLevel)
                 {
                     float waterDepth = heightData[y * (chunkSize + 1) + x] / currSeaLevel;
-                    heights[x, y] = (waterDepth*currSeaLevel)+ baseWorldHeight[y * (chunkSize + 1) + x];
-                    WaterHeights[x, y] = baseWorldHeight[y * (chunkSize + 1) + x] + currSeaLevel-((1-waterDepth)* 0.02f *currSeaLevel)-0.0025f;
-                    
-                    if(x<chunkSize && y<chunkSize)
+                    heights[x, y] = (waterDepth * currSeaLevel) + currBaseHeight;
+                    WaterHeights[x, y] = currSeaLevel;//currBaseHeight + currSeaLevel - ((1 - waterDepth) * 0.02f * currSeaLevel) - 0.0025f;
+                   // if (h > baseWorldSeaLevel)
+                   // {
+                   //     WaterHeights[x, y] = currBaseHeight + currSeaLevel - ((1 - waterDepth) * 0.02f * currSeaLevel) - 0.0025f;
+                   // }
+                   // else
+                   // {
+                   //     WaterHeights[x, y] = currSeaLevel;
+                   // }
+
+                    if (x<chunkSize && y<chunkSize)
                        water[x, y] = true;
-                    //(h+ (h * waterDepth))/2f;
-                    //h+(((baseWorldHeight[y * (chunkSize + 1) + x] + currSeaLevel)-h)*waterDepth);
                     WaterTexture.SetPixel(y, x, bio.seaColour.Evaluate(waterDepth)*new Color(1f,1f,1f, 0.01f));
                     SurfaceTexture.SetPixel(y, x, (bio.seaColour.Evaluate(waterDepth) + bio.heightColour.Evaluate(h))/2);
                 }
+              
                 else
                 {
                     heights[x, y] = h;
+
                     if (x < chunkSize && y < chunkSize)
                         water[x, y] = false;
+
                     SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate((h - currSeaLevel) / (1- currSeaLevel)));
                 }
               
@@ -482,22 +515,12 @@ public class WorldGenerator : MonoBehaviour
                 }
                 if (!alreadyPlaced)
                 {
-                    GameObject CurrChunkPrefab;
-                    if (Layer == 0)
-                    {
-                        CurrChunkPrefab = ChunkPrefab;
-                        
-                    }
-                    else
-                    {
-                        CurrChunkPrefab = ChunkPrefab2;
-                    }
-                    GameObject chunk = Instantiate(CurrChunkPrefab, new Vector3(x, -Layer, y), Quaternion.identity);
+                    
+                    GameObject chunk = Instantiate(ChunkPrefab, new Vector3(x, -Layer, y), Quaternion.identity);
                     i++;
                     chunk.transform.parent = this.transform;
                     chunk.GetComponent<Chunk>().chunkSize = chunkSize;
                     chunk.GetComponent<Chunk>().layer = Layer;
-                    chunk.GetComponent<Chunk>().depth = Depth;
                     LoadedChunks.Add(chunk);
                     GetMap(chunk.GetComponent<Chunk>());
                     if (i >= maxChunksPerFrame)
@@ -532,11 +555,11 @@ public class WorldGenerator : MonoBehaviour
     // shader scripts
     public void setShaderValuesK1(Map workMap, Chunk chunk)
     {
-        ComputeBuffer heightBuffer = new ComputeBuffer(workMap.mapsize * workMap.mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
+        ComputeBuffer heightBuffer = new ComputeBuffer(mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
 
 
 
-        workMap.heightData = new float[workMap.mapsize * workMap.mapsize * threadCountAndMapMult * threadCountAndMapMult];
+        workMap.heightData = new float[mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult];
 
 
         Vector3 snappedPosition = new Vector3(
@@ -545,7 +568,7 @@ public class WorldGenerator : MonoBehaviour
         Mathf.RoundToInt(chunk.transform.position.z / workMap.scale) * workMap.scale
         );
 
-        float halfMapSize = (workMap.scale * workMap.mapsize * threadCountAndMapMult) / 2;
+        float halfMapSize = (workMap.scale * mapsize * threadCountAndMapMult) / 2;
 
         Vector3 offset = new Vector3(
             halfMapSize,
@@ -560,9 +583,9 @@ public class WorldGenerator : MonoBehaviour
         compNoise.SetVector("workMapoffset", workMap.offset);
         compNoise.SetFloat("workMapAmplitude", workMap.amplitude);
         compNoise.SetFloat("workMapGradientDampening", workMap.gradientDampening);
-        compNoise.SetInt("WorkMapSize", workMap.mapsize * threadCountAndMapMult);
+        compNoise.SetInt("WorkMapSize", mapsize * threadCountAndMapMult);
         compNoise.SetBuffer(0, "Result", heightBuffer);
-        compNoise.Dispatch(0, workMap.mapsize + 1, workMap.mapsize + 1, 1);
+        compNoise.Dispatch(0, mapsize + 1, mapsize + 1, 1);
         mapItterations[0]++;
         Debug.Log("Maps generated from Layer 0 = " + mapItterations[0]);
         heightBuffer.GetData(workMap.heightData);
@@ -571,13 +594,13 @@ public class WorldGenerator : MonoBehaviour
     }
     public void setShaderValuesK2(Map lastMap, Map workMap, Chunk chunk)
     {
-        ComputeBuffer heightBuffer = new ComputeBuffer(workMap.mapsize * workMap.mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
+        ComputeBuffer heightBuffer = new ComputeBuffer(mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
 
 
 
-        workMap.heightData = new float[workMap.mapsize * workMap.mapsize * threadCountAndMapMult * threadCountAndMapMult];
+        workMap.heightData = new float[mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult];
 
-        ComputeBuffer lastHeightBuffer = new ComputeBuffer(lastMap.mapsize * lastMap.mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
+        ComputeBuffer lastHeightBuffer = new ComputeBuffer(mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
         lastHeightBuffer.SetData(lastMap.heightData);
 
         Vector3 snappedPosition = new Vector3(
@@ -586,7 +609,7 @@ public class WorldGenerator : MonoBehaviour
             Mathf.RoundToInt(chunk.transform.position.z / workMap.scale) * workMap.scale
         );
 
-        float halfMapSize = (workMap.scale * workMap.mapsize * threadCountAndMapMult) / 2;
+        float halfMapSize = (workMap.scale * mapsize * threadCountAndMapMult) / 2;
 
         Vector3 offset = new Vector3(
             halfMapSize,
@@ -603,12 +626,12 @@ public class WorldGenerator : MonoBehaviour
         compNoise.SetVector("workMapoffset", workMap.offset);
         compNoise.SetFloat("workMapAmplitude", workMap.amplitude);
         compNoise.SetFloat("workMapGradientDampening", workMap.gradientDampening);
-        compNoise.SetInt("WorkMapSize", workMap.mapsize * threadCountAndMapMult);
-        compNoise.SetInt("BaseMapSize", lastMap.mapsize * threadCountAndMapMult);
+        compNoise.SetInt("WorkMapSize", mapsize * threadCountAndMapMult);
+        compNoise.SetInt("BaseMapSize", mapsize * threadCountAndMapMult);
         compNoise.SetBuffer(1, "Result", heightBuffer);
         compNoise.SetBuffer(1, "heightMap", lastHeightBuffer);
 
-        compNoise.Dispatch(1, workMap.mapsize + 1, workMap.mapsize + 1, 1);
+        compNoise.Dispatch(1, mapsize + 1, mapsize + 1, 1);
 
         heightBuffer.GetData(workMap.heightData);
 
@@ -620,7 +643,7 @@ public class WorldGenerator : MonoBehaviour
     {
 
         ComputeBuffer currHeightBuffer = new ComputeBuffer((1 + chunk.chunkSize) * (1 + chunk.chunkSize), sizeof(float));
-        ComputeBuffer finalHeightBuffer = new ComputeBuffer(finalMap.mapsize * finalMap.mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
+        ComputeBuffer finalHeightBuffer = new ComputeBuffer(mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
         finalHeightBuffer.SetData(finalMap.heightData);
 
 
@@ -629,7 +652,7 @@ public class WorldGenerator : MonoBehaviour
         compNoise.SetFloat("workMapScale", 1);
         compNoise.SetVector("workMapPosition", new Vector2(chunk.transform.position.x - (chunk.chunkSize / 2), chunk.transform.position.z - (chunk.chunkSize / 2)));
         compNoise.SetInt("WorkMapSize", chunk.chunkSize + 1);
-        compNoise.SetInt("BaseMapSize", finalMap.mapsize * threadCountAndMapMult);
+        compNoise.SetInt("BaseMapSize", mapsize * threadCountAndMapMult);
         compNoise.SetBuffer(2, "Result", currHeightBuffer);
         compNoise.SetBuffer(2, "heightMap", finalHeightBuffer);
 

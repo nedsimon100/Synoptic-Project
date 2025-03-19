@@ -308,7 +308,7 @@ MeshRenderer:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 196427280}
-  m_Enabled: 1
+  m_Enabled: 0
   m_CastShadows: 1
   m_ReceiveShadows: 1
   m_DynamicOccludee: 1
@@ -363,7 +363,7 @@ Transform:
   m_GameObject: {fileID: 196427280}
   serializedVersion: 2
   m_LocalRotation: {x: 0.7071068, y: 0, z: 0, w: 0.7071068}
-  m_LocalPosition: {x: 0, y: 833.0436, z: 0}
+  m_LocalPosition: {x: 0, y: 1500, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children:
@@ -501,7 +501,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1000
+  far clip plane: 1300
   field of view: 70
   orthographic: 0
   orthographic size: 10
@@ -528,13 +528,13 @@ Transform:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 519420028}
   serializedVersion: 2
-  m_LocalRotation: {x: 0.08715578, y: 0, z: 0, w: 0.9961947}
-  m_LocalPosition: {x: 0, y: 5, z: -10}
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0, y: 1, z: 0}
   m_LocalScale: {x: 1, y: 1, z: 1}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 196427285}
-  m_LocalEulerAnglesHint: {x: 10, y: 0, z: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!192 &519420033
 OcclusionArea:
   m_ObjectHideFlags: 0
@@ -591,29 +591,27 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxChunksPerFrame: 2
-  chunkSize: 64
+  chunkSize: 124
   LoadDist: 5
   deletionDist: 10
   Player: {fileID: 196427280}
   seed: 0
   ChunkPrefab: {fileID: 1432234054492279794, guid: 972854f64563414459e6597732dc2adc, type: 3}
-  ChunkPrefab2: {fileID: 1432234054492279794, guid: 972854f64563414459e6597732dc2adc, type: 3}
   LoadedChunks: []
   LastLoadPoint: {x: 0, y: 0, z: 0}
   Layer: 0
-  Depth: 500
   layerOffset: 0
   baseWorldMap:
     position: {x: 0, y: 0, z: 0}
     offset: {x: 0, y: 0, z: 0}
     heightData: []
-    scale: 1500
-    mapsize: 50
-    amplitude: 0.6
-    gradientDampening: 0
-  baseWorldSeaLevel: 0.1
+    scale: 1000
+    amplitude: 750
+    gradientDampening: 1.32
+  baseWorldSeaLevel: 0.4
   compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
   threadCountAndMapMult: 16
+  mapsize: 50
   maxLayersSaved: 1
   layers:
   - biomes:
@@ -1125,58 +1123,56 @@ MonoBehaviour:
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 500
-      mapsize: 50
-      amplitude: 0.2
+      scale: 750
+      amplitude: 300
       gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 150
-      mapsize: 50
-      amplitude: 0.1
-      gradientDampening: 0.125
+      scale: 486
+      amplitude: 150
+      gradientDampening: 1
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 75
-      mapsize: 50
-      amplitude: 0.05
-      gradientDampening: 0.3
+      scale: 300
+      amplitude: 100
+      gradientDampening: 2
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 200
+      amplitude: 95
+      gradientDampening: 2.2
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 100
+      amplitude: 32
+      gradientDampening: 2.3
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 50
-      mapsize: 50
-      amplitude: 0.025
-      gradientDampening: 1
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 25
-      mapsize: 50
-      amplitude: 0.0125
-      gradientDampening: 1
+      amplitude: 10
+      gradientDampening: 3
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 10
-      mapsize: 50
-      amplitude: 0.0125
+      amplitude: 1
       gradientDampening: 4
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 5
-      mapsize: 50
-      amplitude: 0.005
-      gradientDampening: 5
+      amplitude: 0.5
+      gradientDampening: 0
     compMap1:
       position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 2000
-      mapsize: 20
       amplitude: 1
       gradientDampening: 0
     compMap2:
@@ -1184,9 +1180,9 @@ MonoBehaviour:
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 1700
-      mapsize: 20
       amplitude: 1
       gradientDampening: 0
+    Depth: 0
     biomeBuffer: []
     minLayer: 0
   WL: []
