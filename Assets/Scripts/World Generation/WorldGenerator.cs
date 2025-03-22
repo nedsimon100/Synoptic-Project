@@ -12,14 +12,21 @@ public class WorldGenerator : MonoBehaviour
     public GameObject Player;
     public int seed;
     public GameObject ChunkPrefab;
+    [HideInInspector]
     public List<GameObject> LoadedChunks = new List<GameObject>();
+    [HideInInspector]
     public Vector3 LastLoadPoint = Vector3.zero;
-    public int Layer;
 
+    [HideInInspector]
+    public int Layer;
+    [HideInInspector]
     public float layerOffset;
 
     public Map baseWorldMap;
+    [Range(0f, 1f)]
     public float baseWorldSeaLevel;
+    [Range(0f, 1f)]
+    public float riverAndLakeDensity;
     [Header("Compute Shader")]
 
     public ComputeShader compNoise;
@@ -31,6 +38,7 @@ public class WorldGenerator : MonoBehaviour
     public int mapsize;
     [Range(1, 10)]
     public int maxLayersSaved;
+    
     public List<MapLayer> layers = new List<MapLayer>();
 
     //public GameObject debugMap;
@@ -50,7 +58,7 @@ public class WorldGenerator : MonoBehaviour
         
         [Range(0f, 1000f)]
         public float amplitude;
-        [Range(0f, 10f)]
+        [Range(0f, 10000f)]
         public float gradientDampening;
         public Map(Map copyFrom)
         {
@@ -420,31 +428,22 @@ public class WorldGenerator : MonoBehaviour
                 Biome bio = workLayer.ML.biomes[biomeIndex];
 
                 float currBaseHeight = (baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.amplitude) * currBaseAmp;
-                float h = currBaseHeight + heightData[y * (chunkSize + 1) + x];
+                float h = currBaseHeight + (heightData[y * (chunkSize + 1) + x]*bio.heightMult);
 
-                float currSeaLevel = baseWorldSeaLevel;
+                //float currSeaLevel = baseWorldSeaLevel;
 
-                if (currBaseHeight > currSeaLevel)
-                {
-                    currSeaLevel = currBaseHeight + (baseWorldSeaLevel * (currBaseHeight - baseWorldSeaLevel) / (currBaseAmp - baseWorldSeaLevel));
-                }
+                float currSeaLevel = baseWorldSeaLevel + (baseWorldSeaLevel*(currBaseHeight/currBaseAmp)*(riverAndLakeDensity));
+                
                 
                
 
-                if (h < currSeaLevel)
+                if (h < currSeaLevel||baseWorldSeaLevel>h)
                 {
                     float waterDepth = heightData[y * (chunkSize + 1) + x] / currSeaLevel;
-                    heights[x, y] = (waterDepth * currSeaLevel) + currBaseHeight;
-                    WaterHeights[x, y] = currSeaLevel;//currBaseHeight + currSeaLevel - ((1 - waterDepth) * 0.02f * currSeaLevel) - 0.0025f;
-                   // if (h > baseWorldSeaLevel)
-                   // {
-                   //     WaterHeights[x, y] = currBaseHeight + currSeaLevel - ((1 - waterDepth) * 0.02f * currSeaLevel) - 0.0025f;
-                   // }
-                   // else
-                   // {
-                   //     WaterHeights[x, y] = currSeaLevel;
-                   // }
-
+                    heights[x, y] =  (waterDepth * currSeaLevel) + currBaseHeight;
+                    currSeaLevel = currSeaLevel + ((h - currSeaLevel) *0.2f * (1- waterDepth));
+                    WaterHeights[x, y] = currSeaLevel<baseWorldSeaLevel?baseWorldSeaLevel-0.002f:currSeaLevel - 0.002f;
+                    
                     if (x<chunkSize && y<chunkSize)
                        water[x, y] = true;
                     WaterTexture.SetPixel(y, x, bio.seaColour.Evaluate(waterDepth)*new Color(1f,1f,1f, 0.01f));
@@ -454,10 +453,9 @@ public class WorldGenerator : MonoBehaviour
                 else
                 {
                     heights[x, y] = h;
-
+               
                     if (x < chunkSize && y < chunkSize)
                         water[x, y] = false;
-
                     SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate((h - currSeaLevel) / (1- currSeaLevel)));
                 }
               
@@ -579,7 +577,6 @@ public class WorldGenerator : MonoBehaviour
         workMap.position = snappedPosition - offset;
         compNoise.SetFloat("workMapScale", workMap.scale);
         compNoise.SetVector("workMapPosition", new Vector2(workMap.position.x, workMap.position.z));
-
         compNoise.SetVector("workMapoffset", workMap.offset);
         compNoise.SetFloat("workMapAmplitude", workMap.amplitude);
         compNoise.SetFloat("workMapGradientDampening", workMap.gradientDampening);

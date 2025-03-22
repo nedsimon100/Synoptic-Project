@@ -24,8 +24,7 @@ float depth;
 
 float GenRandomPoint(float2 pos)
 {
-    float2 noise = frac(sin(dot(pos, float2(12.9898 ,78.233) * 2.0)) * 43758.5453);
-    return abs(noise.x + noise.y) * 0.5;
+    return frac(cos(dot(pos, float2(23.14069263277926, 2.665144142690225))) * 12345.6789);
 }
 float2 CubicInterpolate(float p0, float p1, float p2, float p3, float t)
 {
@@ -79,7 +78,7 @@ void MidMapGen(uint3 id : SV_DispatchThreadID)
     float2 gradient = ans.yz;
     if (id.x < WorkMapSize && id.y < WorkMapSize)
     {
-        Result[id.y * WorkMapSize + id.x] = height + (GenRandomPoint(pos + workMapoffset) * workMapAmplitude) / ((length(gradient) * depth * workMapGradientDampening) + 1);
+        Result[id.y * WorkMapSize + id.x] = height + (GenRandomPoint(pos + workMapoffset) * workMapAmplitude) / ((length(gradient) * workMapGradientDampening) + 1);
     }
 }
 [numthreads(16, 16, 1)]
