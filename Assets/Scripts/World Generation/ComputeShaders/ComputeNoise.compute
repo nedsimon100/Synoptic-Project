@@ -32,7 +32,8 @@ float2 CubicInterpolate(float p0, float p1, float p2, float p3, float t)
     float b = (p0 - p1) - a;
     float c = p2 - p0;
     
-    return float2(a * pow(t, 3) + b * pow(t, 2) + c * t + p1, (3 * a * t + 2 * b) * t + c); // x is height, y is gradient
+    return float2((a * t * t * t) + (b * t * t) + (c * t) + p1, // height
+                 (3 * a * t * t) + (2 * b * t) + c); // Gradient
 }
 
 float3 BiCubicInterpolate(float2 pos)   // x is height, (y,z) is gradient // bicubic interpolation needs fixing
@@ -52,8 +53,12 @@ float3 BiCubicInterpolate(float2 pos)   // x is height, (y,z) is gradient // bic
             heightMap[baseIndex + 2],
             percentAcross.x);
     }
+    float2 finalHeightAndYGradient = CubicInterpolate(heights[0].x, heights[1].x, heights[2].x, heights[3].x, percentAcross.y);
     
-    return float3(CubicInterpolate(heights[0].x, heights[1].x, heights[2].x, heights[3].x, percentAcross.y).xy, CubicInterpolate(heights[0].y, heights[1].y, heights[2].y, heights[3].y, percentAcross.x).x);
+    float finalXGradient = CubicInterpolate(heights[0].y, heights[1].y, heights[2].y, heights[3].y, percentAcross.y).x;
+    
+    
+    return float3(finalHeightAndYGradient.x, finalXGradient / BaseMapScale, finalHeightAndYGradient.y / BaseMapScale);
 }
 
 [numthreads(16,16,1)]
@@ -74,11 +79,13 @@ void MidMapGen(uint3 id : SV_DispatchThreadID)
     
     float3 ans = BiCubicInterpolate(pos);
     float height = ans.x;
-    
     float2 gradient = ans.yz;
+    
     if (id.x < WorkMapSize && id.y < WorkMapSize)
     {
-        Result[id.y * WorkMapSize + id.x] = height + (GenRandomPoint(pos + workMapoffset) * workMapAmplitude) / ((length(gradient) * workMapGradientDampening) + 1);
+        // Add small epsilon to prevent division by zero
+        float gradientEffect = (length(gradient) * workMapGradientDampening * depth) + 1;
+        Result[id.y * WorkMapSize + id.x] = height + ((GenRandomPoint(pos + workMapoffset) * workMapAmplitude) / gradientEffect);
     }
 }
 [numthreads(16, 16, 1)]

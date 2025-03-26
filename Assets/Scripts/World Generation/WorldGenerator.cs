@@ -30,6 +30,7 @@ public class WorldGenerator : MonoBehaviour
     [Header("Compute Shader")]
 
     public ComputeShader compNoise;
+    [HideInInspector]
     public int threadCountAndMapMult = 16;
     private int[] mapItterations;
 
@@ -38,7 +39,6 @@ public class WorldGenerator : MonoBehaviour
     public int mapsize;
     [Range(1, 10)]
     public int maxLayersSaved;
-    
     public List<MapLayer> layers = new List<MapLayer>();
 
     //public GameObject debugMap;
@@ -58,7 +58,7 @@ public class WorldGenerator : MonoBehaviour
         
         [Range(0f, 1000f)]
         public float amplitude;
-        [Range(0f, 10000f)]
+        [Range(0f, 20f)]
         public float gradientDampening;
         public Map(Map copyFrom)
         {
@@ -138,12 +138,13 @@ public class WorldGenerator : MonoBehaviour
 
     private void Start()
     {
-        baseWorldMap.offset = new Vector3(Random.Range(0, 99999), Random.Range(0, 99999));
+        
         mapItterations = new int[layers[0].maps.Count];
         if (seed == 0)
         {
             seed = Random.Range(0, 10000);
         }
+        baseWorldMap.offset = new Vector3(Random.Range(0, 99999), Random.Range(0, 99999));
         LastLoadPoint = Player.transform.position;
         LastLoadPoint.y = 0;
         chunkSize = Mathf.ClosestPowerOfTwo(chunkSize);
@@ -184,7 +185,7 @@ public class WorldGenerator : MonoBehaviour
         public MapLayer ML;
     }
 
-
+    [HideInInspector]
     public List<workingLayer> WL = new List<workingLayer>();
 
 
@@ -270,8 +271,7 @@ public class WorldGenerator : MonoBehaviour
         }
         for (int i = startMap; i < Worklayer.ML.maps.Count; i++)
         {
-
-            setShaderValuesK2(Worklayer.ML.maps[i - 1], Worklayer.ML.maps[i], chunk);
+            setShaderValuesK2(Worklayer.ML.maps[i - 1], Worklayer.ML.maps[i], chunk, Worklayer.ML.Depth);
             mapItterations[i]++;
             Debug.Log("Maps generated from Layer " + i + " = " + mapItterations[i]);
             
@@ -428,20 +428,20 @@ public class WorldGenerator : MonoBehaviour
                 Biome bio = workLayer.ML.biomes[biomeIndex];
 
                 float currBaseHeight = (baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.amplitude) * currBaseAmp;
-                float h = currBaseHeight + (heightData[y * (chunkSize + 1) + x]*bio.heightMult);
+                float h = currBaseHeight + (heightData[y * (chunkSize + 1) + x]);//*bio.heightMult
 
-                //float currSeaLevel = baseWorldSeaLevel;
-
-                float currSeaLevel = baseWorldSeaLevel + (baseWorldSeaLevel*(currBaseHeight/currBaseAmp)*(riverAndLakeDensity));
-                
+                float currSeaLevel = baseWorldSeaLevel;
+                if (currBaseHeight > baseWorldSeaLevel) { 
+                currSeaLevel = baseWorldSeaLevel + ((riverAndLakeDensity) * (1/((currBaseAmp - baseWorldSeaLevel)/(currBaseHeight - baseWorldSeaLevel))));
+                }
                 
                
 
-                if (h < currSeaLevel||baseWorldSeaLevel>h)
+                if (h < currSeaLevel||h < baseWorldSeaLevel)
                 {
-                    float waterDepth = heightData[y * (chunkSize + 1) + x] / currSeaLevel;
-                    heights[x, y] =  (waterDepth * currSeaLevel) + currBaseHeight;
-                    currSeaLevel = currSeaLevel + ((h - currSeaLevel) *0.2f * (1- waterDepth));
+                    float waterDepth = (heightData[y * (chunkSize + 1) + x]) / currSeaLevel;
+                    heights[x, y] = (waterDepth * currSeaLevel) + currBaseHeight;
+                    currSeaLevel = currSeaLevel + ((currSeaLevel-h) *0.02f * (1- waterDepth));
                     WaterHeights[x, y] = currSeaLevel<baseWorldSeaLevel?baseWorldSeaLevel-0.002f:currSeaLevel - 0.002f;
                     
                     if (x<chunkSize && y<chunkSize)
@@ -589,7 +589,7 @@ public class WorldGenerator : MonoBehaviour
 
         heightBuffer.Release();
     }
-    public void setShaderValuesK2(Map lastMap, Map workMap, Chunk chunk)
+    public void setShaderValuesK2(Map lastMap, Map workMap, Chunk chunk, float depth)
     {
         ComputeBuffer heightBuffer = new ComputeBuffer(mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
 
@@ -615,7 +615,7 @@ public class WorldGenerator : MonoBehaviour
         );
 
         workMap.position = snappedPosition - offset;
-
+        compNoise.SetFloat("depth", depth);
         compNoise.SetFloat("BaseMapScale", lastMap.scale);
         compNoise.SetVector("BaseMapPosition", new Vector2(lastMap.position.x, lastMap.position.z));
         compNoise.SetFloat("workMapScale", workMap.scale);

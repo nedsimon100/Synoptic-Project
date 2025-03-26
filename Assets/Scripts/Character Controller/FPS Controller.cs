@@ -41,7 +41,11 @@ public class FPSController : MonoBehaviour
         }
         if (Input.GetKeyDown(KeyCode.Space))
         {
-            transform.position = new Vector3(transform.position.x, 1000, transform.position.y);
+            rb.AddForce(new Vector3(0,20,0),ForceMode.Impulse);
+        }
+        if (Input.GetKeyDown(KeyCode.LeftAlt))
+        {
+            rb.AddForce(new Vector3(0, -20, 0), ForceMode.Impulse);
         }
         float xmove = Input.GetAxisRaw("Horizontal");
         float ymove = Input.GetAxisRaw("Vertical");
