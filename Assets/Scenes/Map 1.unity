@@ -606,14 +606,14 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     offset: {x: 0, y: 0, z: 0}
     heightData: []
-    scale: 500
-    amplitude: 550
+    scale: 1500
+    maxHeight: 1000
     gradientDampening: 0
-  baseWorldSeaLevel: 0.2
-  riverAndLakeDensity: 0.4
+  baseWorldSeaLevel: 0.113
+  riverAndLakeDensity: 0.884
   compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
   threadCountAndMapMult: 16
-  mapsize: 50
+  mapsize: 90
   maxLayersSaved: 1
   layers:
   - biomes:
@@ -1000,57 +1000,57 @@ MonoBehaviour:
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 250
-      amplitude: 200
+      maxHeight: 300
       gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 100
-      amplitude: 70
+      scale: 300
+      maxHeight: 200
       gradientDampening: 1
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 50
-      amplitude: 20
+      maxHeight: 40
       gradientDampening: 3
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 20
-      amplitude: 30
+      maxHeight: 15
       gradientDampening: 5
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 5
-      amplitude: 3
+      maxHeight: 3
       gradientDampening: 6
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 3
-      amplitude: 2
+      maxHeight: 2
       gradientDampening: 3
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 1
-      amplitude: 0.5
+      maxHeight: 0.25
       gradientDampening: 3
-    compMap1:
+    TempretureMap:
       position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 1606
-      amplitude: 80
+      scale: 3578
+      maxHeight: 100
       gradientDampening: 0
-    compMap2:
+    HumidityMap:
       position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 2636
-      amplitude: 80
+      scale: 5000
+      maxHeight: 100
       gradientDampening: 0
     Depth: 0
     biomeBuffer: []

@@ -67,7 +67,7 @@ void firstMapGen (uint3 id : SV_DispatchThreadID)
     float2 pos = workMapPosition + (id.xy * workMapScale);
     
     float height = GenRandomPoint(pos + workMapoffset) * workMapAmplitude;
-    if (id.y < WorkMapSize && id.x < WorkMapSize)
+    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
     {
         Result[id.y * WorkMapSize + id.x] = height;
     }
@@ -81,7 +81,7 @@ void MidMapGen(uint3 id : SV_DispatchThreadID)
     float height = ans.x;
     float2 gradient = ans.yz;
     
-    if (id.x < WorkMapSize && id.y < WorkMapSize)
+    if (id.x < (uint) WorkMapSize && id.y < (uint) WorkMapSize)
     {
         // Add small epsilon to prevent division by zero
         float gradientEffect = (length(gradient) * workMapGradientDampening * depth) + 1;
@@ -95,7 +95,7 @@ void FinalMapGen(uint3 id : SV_DispatchThreadID)
     
     float height = BiCubicInterpolate(pos).x;
    
-    if (id.y < WorkMapSize && id.x < WorkMapSize)
+    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
     {
         Result[id.y * (WorkMapSize) + id.x] = height; // this is correct
     }
@@ -123,7 +123,7 @@ void BiomeGen(uint3 id : SV_DispatchThreadID)
         }
     }
     
-    if (id.y < WorkMapSize && id.x < WorkMapSize)
+    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
     {
         biomeResult[id.y * (WorkMapSize) + id.x] = Biome; // this is correct
     }
@@ -137,7 +137,7 @@ void MapComparison(uint3 id : SV_DispatchThreadID)
     
     float diff = pos.x - (((pos.y - 0.5) * compMapMult)+0.5);
     
-    if (id.y < WorkMapSize && id.x < WorkMapSize)
+    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
     {
         compResult[id.y * (WorkMapSize) + id.x] = diff; // this is correct
     }
