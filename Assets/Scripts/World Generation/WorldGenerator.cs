@@ -289,7 +289,7 @@ public class WorldGenerator : MonoBehaviour
         }
         else
         {
-            setChunkArrays(setShaderValuesK3(Worklayer.ML.maps[Worklayer.ML.maps.Count - 1], chunk), caves(chunk, Worklayer), Worklayer, chunk);
+        //    setChunkArrays(setShaderValuesK3(Worklayer.ML.maps[Worklayer.ML.maps.Count - 1], chunk), caves(chunk, Worklayer), Worklayer, chunk);
 
         }
         return Worklayer;
@@ -430,48 +430,34 @@ public class WorldGenerator : MonoBehaviour
                 Biome bio = workLayer.ML.biomes[biomeIndex];
 
                 float currBaseHeight = (baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.maxHeight) * currBaseAmp;
-                float h = currBaseHeight + (heightData[y * (chunkSize + 1) + x]);//*bio.heightMult
+                float h = currBaseHeight + (heightData[y * (chunkSize + 1) + x] );//* bio.heightMult
 
-                float riverHeight = baseWorldSeaLevel;
-
-                if (currBaseHeight > baseWorldSeaLevel)
+                float currWaterLevel = baseWorldSeaLevel;
+                if (currBaseHeight > (baseWorldSeaLevel * (1 - riverAndLakeDensity)))
                 {
-                    riverHeight = currBaseHeight + ((riverAndLakeDensity) * Mathf.Min(((currBaseAmp) - (currBaseHeight)), (currBaseHeight - (baseWorldSeaLevel))));
+                    currWaterLevel = Mathf.Clamp(baseWorldSeaLevel+((currBaseHeight-(baseWorldSeaLevel * (1 - riverAndLakeDensity)))*riverAndLakeDensity), baseWorldSeaLevel, 1);
                 }
-
-                if (h < baseWorldSeaLevel)
+                if (h < currWaterLevel)
                 {
-                    float waterDepth = (heightData[y * (chunkSize + 1) + x]) / baseWorldSeaLevel;
-                    heights[x, y] = (waterDepth * baseWorldSeaLevel) + currBaseHeight;
-
-                    WaterHeights[x, y] = (baseWorldSeaLevel + ((baseWorldSeaLevel - h) * 0.02f * (1 - waterDepth))) - 0.002f;
-
+                    float waterDepth = heightData[y * (chunkSize + 1) + x] / (currWaterLevel-currBaseHeight);
+                    //heights[x, y] = (waterDepth * currWaterLevel) + currBaseHeight;
+                    //WaterHeights[x, y] = (((currWaterLevel - 0.002f - ((currWaterLevel - h) * 0.3f * (1 - waterDepth)))));
+                    heights[x, y] = currBaseHeight + (heightData[y * (chunkSize + 1) + x]*(waterDepth));
+                    float waterHeight = Mathf.Clamp(currWaterLevel - (heightData[y * (chunkSize + 1) + x] * (1 - waterDepth) * 0.1f)-0.003f,baseWorldSeaLevel- (heightData[y * (chunkSize + 1) + x] * (waterDepth)*0.1f) - 0.003f, 1);
+                    WaterHeights[x, y] = waterHeight-0.001f;
+                    
                     if (x < chunkSize && y < chunkSize)
                         water[x, y] = true;
                     WaterTexture.SetPixel(y, x, bio.seaColour.Evaluate(waterDepth) * new Color(1f, 1f, 1f, 0.01f));
                     SurfaceTexture.SetPixel(y, x, (bio.seaColour.Evaluate(waterDepth) + bio.heightColour.Evaluate(h)) / 2);
                 }
-                
-                else if (h < riverHeight)
-                {
-                    float waterDepth = (heightData[y * (chunkSize + 1) + x]) / riverHeight;
-                    heights[x, y] = (waterDepth * riverHeight) + currBaseHeight;
-                    riverHeight = riverHeight + ((riverHeight - h) * 0.02f * (1 - waterDepth));
-                    WaterHeights[x, y] = riverHeight - 0.002f;
-
-                    if (x < chunkSize && y < chunkSize)
-                        water[x, y] = true;
-                    WaterTexture.SetPixel(y, x, bio.seaColour.Evaluate(waterDepth) * new Color(1f, 1f, 1f, 0.01f));
-                    SurfaceTexture.SetPixel(y, x, (bio.seaColour.Evaluate(waterDepth) + bio.heightColour.Evaluate(h)) / 2);
-                }
-
                 else
                 {
                     heights[x, y] = h;
                
                     if (x < chunkSize && y < chunkSize)
                         water[x, y] = false;
-                    SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate((h-riverHeight) / (1- riverHeight)));
+                    SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate((h- currWaterLevel) / (1- currWaterLevel)));
                 }
               
 
@@ -481,28 +467,30 @@ public class WorldGenerator : MonoBehaviour
         WaterTexture.Apply();
         chunk.drawMap(heights,SurfaceTexture,WaterHeights,water,WaterTexture);
     }
-    public void setChunkArrays(float[] heightData, float[] caveValues, workingLayer workLayer, Chunk chunk)
-    {
-        float[,] heights = new float[(chunkSize + 1), (chunkSize + 1)];
-        float[,] heights2 = new float[(chunkSize + 1), (chunkSize + 1)];
-        bool[,] caves = new bool[(chunkSize), (chunkSize)];
-        Texture2D SurfaceTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
-        for (int x = 0; x < (chunkSize + 1); x++)
-        {
-            for (int y = 0; y < (chunkSize + 1); y++)
-            {
-                Biome bio = workLayer.ML.biomes[0];
-                heights[x, y] = heightData[y * (chunkSize + 1) + x];
-                heights2[x,y] = heightData[y * (chunkSize + 1) + x]+(0.1f* caveValues[y * (chunkSize + 1) + x]);
-                if (x < chunkSize && y < chunkSize)
-                    caves[x, y] = caveValues[y * (chunkSize + 1) + x] > 0 ? true : false;
-                SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate(caveValues[y * (chunkSize + 1) + +x] + 0.5f));
-            }
-        }
-        SurfaceTexture.Apply();
 
-        chunk.drawMap(heights, SurfaceTexture,heights2,caves, SurfaceTexture);
-    }
+    //cave generation not yet finished
+   // public void setChunkArrays(float[] heightData, float[] caveValues, workingLayer workLayer, Chunk chunk)
+   // {
+   //     float[,] heights = new float[(chunkSize + 1), (chunkSize + 1)];
+   //     float[,] heights2 = new float[(chunkSize + 1), (chunkSize + 1)];
+   //     bool[,] caves = new bool[(chunkSize), (chunkSize)];
+   //     Texture2D SurfaceTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
+   //     for (int x = 0; x < (chunkSize + 1); x++)
+   //     {
+   //         for (int y = 0; y < (chunkSize + 1); y++)
+   //         {
+   //             Biome bio = workLayer.ML.biomes[0];
+   //             heights[x, y] = heightData[y * (chunkSize + 1) + x];
+   //             heights2[x,y] = heightData[y * (chunkSize + 1) + x]+(0.1f* caveValues[y * (chunkSize + 1) + x]);
+   //             if (x < chunkSize && y < chunkSize)
+   //                 caves[x, y] = caveValues[y * (chunkSize + 1) + x] > 0 ? true : false;
+   //             SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate(caveValues[y * (chunkSize + 1) + +x] + 0.5f));
+   //         }
+   //     }
+   //     SurfaceTexture.Apply();
+   //
+   //     chunk.drawMap(heights, SurfaceTexture,heights2,caves, SurfaceTexture);
+   // }
 
 
 

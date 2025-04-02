@@ -606,11 +606,11 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     offset: {x: 0, y: 0, z: 0}
     heightData: []
-    scale: 1500
+    scale: 3000
     maxHeight: 1000
     gradientDampening: 0
-  baseWorldSeaLevel: 0.113
-  riverAndLakeDensity: 0.884
+  baseWorldSeaLevel: 0.21
+  riverAndLakeDensity: 0.8
   compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
   threadCountAndMapMult: 16
   mapsize: 90
@@ -995,11 +995,74 @@ MonoBehaviour:
         m_ColorSpace: -1
         m_NumColorKeys: 3
         m_NumAlphaKeys: 2
+    - tempreture: 0
+      humidity: 0
+      heightMult: 1
+      heightColour:
+        serializedVersion: 2
+        key0: {r: 0.6881097, g: 0.9622642, b: 0.9467881, a: 1}
+        key1: {r: 1, g: 1, b: 1, a: 1}
+        key2: {r: 0.7171875, g: 0.9924528, b: 0.9731137, a: 0}
+        key3: {r: 1, g: 1, b: 1, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 5166
+        ctime1: 15343
+        ctime2: 41249
+        ctime3: 65535
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 4
+        m_NumAlphaKeys: 2
+      seaColour:
+        serializedVersion: 2
+        key0: {r: 0, g: 0.36562252, b: 0.4716981, a: 1}
+        key1: {r: 0, g: 0.63448876, b: 0.81886786, a: 1}
+        key2: {r: 0.6396227, g: 1, b: 0.9220019, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 1157
+        ctime1: 31380
+        ctime2: 65535
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 3
+        m_NumAlphaKeys: 2
     maps:
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 250
+      scale: 500
       maxHeight: 300
       gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
