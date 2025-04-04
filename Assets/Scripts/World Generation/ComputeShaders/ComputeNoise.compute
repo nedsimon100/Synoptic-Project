@@ -100,11 +100,11 @@ void FinalMapGen(uint3 id : SV_DispatchThreadID)
         Result[id.y * (WorkMapSize) + id.x] = height; // this is correct
     }
 }
-StructuredBuffer<float3> BiomeMap;
+StructuredBuffer<float4> BiomeMap;
 StructuredBuffer<float> TempMap;
 StructuredBuffer<float> HumidityMap;
 int biomeCount;
-RWStructuredBuffer<int> biomeResult;
+RWStructuredBuffer<float2> biomeResult;
 [numthreads(16,16,1)]
 void BiomeGen(uint3 id : SV_DispatchThreadID)
 {
@@ -112,23 +112,45 @@ void BiomeGen(uint3 id : SV_DispatchThreadID)
     
     float minDist=100;
     int Biome = 0;
-    
+    float totalDist = 0;
+    float pointAmount[20];
+    float totalWeight = 0;
+    float weightedHeight = 0;
+    float maxDist = 0;
+    float exponent = 0.1;
+    float minBiomeBlend = 0.995;
     for (int i = 0; i < biomeCount; i++)
     {
         float dist = length(pos - BiomeMap[i].xy);
+        if (dist > maxDist)
+        {
+            maxDist = dist;
+        }
         if (dist < minDist)
         {
             Biome = i;
             minDist = dist;
         }
     }
-    
+    for (int j = 0; j < biomeCount; j++)
+    {
+        float dist = length(pos - BiomeMap[j].xy);
+        
+        float weight = 1.0 / max(pow((dist - (minDist * minBiomeBlend)) / (maxDist - (minDist * minBiomeBlend)), exponent) * maxDist, 0.001);
+
+        weightedHeight += weight * BiomeMap[j].w;
+        totalWeight += weight;
+    }
+
+    float height = (totalWeight > 0) ? (weightedHeight / totalWeight) : 0; // Normalize height
+
     if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
     {
-        biomeResult[id.y * (WorkMapSize) + id.x] = Biome; // this is correct
+        biomeResult[id.y * WorkMapSize + id.x] = float2(Biome, height);
     }
+
 }
-float compMapMult;
+    float compMapMult;
 RWStructuredBuffer<float> compResult;
 [numthreads(16, 16, 1)]
 void MapComparison(uint3 id : SV_DispatchThreadID)

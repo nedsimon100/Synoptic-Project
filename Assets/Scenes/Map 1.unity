@@ -593,7 +593,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxChunksPerFrame: 2
   chunkSize: 124
-  LoadDist: 6
+  LoadDist: 5
   deletionDist: 10
   Player: {fileID: 196427280}
   seed: 0
@@ -609,31 +609,31 @@ MonoBehaviour:
     scale: 3000
     maxHeight: 1000
     gradientDampening: 0
-  baseWorldSeaLevel: 0.21
-  riverAndLakeDensity: 0.8
+  baseWorldSeaLevel: 0.2
+  riverAndLakeDensity: 0.6
   compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
   threadCountAndMapMult: 16
   mapsize: 90
   maxLayersSaved: 1
   layers:
   - biomes:
-    - tempreture: 0
+    - tempreture: 100
       humidity: 0
-      heightMult: 1
+      heightMult: 0.1
       heightColour:
         serializedVersion: 2
-        key0: {r: 0.73403347, g: 0.98490566, b: 0.9698954, a: 1}
-        key1: {r: 1, g: 1, b: 1, a: 1}
-        key2: {r: 0.59700245, g: 0.7207546, b: 0.7130201, a: 0}
-        key3: {r: 0, g: 0, b: 0, a: 0}
+        key0: {r: 0.8943659, g: 1, b: 0, a: 1}
+        key1: {r: 0.48865485, g: 1, b: 0, a: 1}
+        key2: {r: 0.8863884, g: 1, b: 0, a: 0}
+        key3: {r: 0.986478, g: 1, b: 0.5943396, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
         key5: {r: 0, g: 0, b: 0, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 77
-        ctime1: 30917
-        ctime2: 60524
-        ctime3: 0
+        ctime0: 231
+        ctime1: 848
+        ctime2: 4086
+        ctime3: 65535
         ctime4: 0
         ctime5: 0
         ctime6: 0
@@ -648,7 +648,7 @@ MonoBehaviour:
         atime7: 0
         m_Mode: 0
         m_ColorSpace: -1
-        m_NumColorKeys: 3
+        m_NumColorKeys: 4
         m_NumAlphaKeys: 2
       seaColour:
         serializedVersion: 2
@@ -694,7 +694,7 @@ MonoBehaviour:
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
         ctime0: 77
-        ctime1: 13493
+        ctime1: 3007
         ctime2: 33076
         ctime3: 53739
         ctime4: 55589
@@ -743,72 +743,9 @@ MonoBehaviour:
         m_ColorSpace: -1
         m_NumColorKeys: 3
         m_NumAlphaKeys: 2
-    - tempreture: 100
-      humidity: 0
-      heightMult: 1
-      heightColour:
-        serializedVersion: 2
-        key0: {r: 0.9517839, g: 1, b: 0.5943396, a: 1}
-        key1: {r: 1, g: 0.9407004, b: 0, a: 1}
-        key2: {r: 0.6603774, g: 0.58136594, b: 0.12833746, a: 0}
-        key3: {r: 0.8677623, g: 0.9169811, b: 0.27509424, a: 0}
-        key4: {r: 0.8415094, g: 0.7209784, b: 0.28420782, a: 0}
-        key5: {r: 0, g: 0, b: 0, a: 0}
-        key6: {r: 0, g: 0, b: 0, a: 0}
-        key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 77
-        ctime1: 13493
-        ctime2: 41249
-        ctime3: 60061
-        ctime4: 63762
-        ctime5: 0
-        ctime6: 0
-        ctime7: 0
-        atime0: 0
-        atime1: 65535
-        atime2: 0
-        atime3: 0
-        atime4: 0
-        atime5: 0
-        atime6: 0
-        atime7: 0
-        m_Mode: 0
-        m_ColorSpace: -1
-        m_NumColorKeys: 5
-        m_NumAlphaKeys: 2
-      seaColour:
-        serializedVersion: 2
-        key0: {r: 0, g: 0.36562252, b: 0.4716981, a: 1}
-        key1: {r: 0, g: 0.63448876, b: 0.81886786, a: 1}
-        key2: {r: 0, g: 1, b: 0.9085324, a: 0}
-        key3: {r: 0, g: 0, b: 0, a: 0}
-        key4: {r: 0, g: 0, b: 0, a: 0}
-        key5: {r: 0, g: 0, b: 0, a: 0}
-        key6: {r: 0, g: 0, b: 0, a: 0}
-        key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 1157
-        ctime1: 31380
-        ctime2: 65535
-        ctime3: 0
-        ctime4: 0
-        ctime5: 0
-        ctime6: 0
-        ctime7: 0
-        atime0: 0
-        atime1: 65535
-        atime2: 0
-        atime3: 0
-        atime4: 0
-        atime5: 0
-        atime6: 0
-        atime7: 0
-        m_Mode: 0
-        m_ColorSpace: -1
-        m_NumColorKeys: 3
-        m_NumAlphaKeys: 2
     - tempreture: 20
       humidity: 20
-      heightMult: 1
+      heightMult: 1.1
       heightColour:
         serializedVersion: 2
         key0: {r: 0.9517839, g: 1, b: 0.5943396, a: 1}
@@ -819,8 +756,8 @@ MonoBehaviour:
         key5: {r: 1, g: 1, b: 1, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 5166
-        ctime1: 9329
+        ctime0: 1311
+        ctime1: 3007
         ctime2: 41249
         ctime3: 51426
         ctime4: 60832
@@ -871,7 +808,7 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
     - tempreture: 100
       humidity: 100
-      heightMult: 1
+      heightMult: 0.33
       heightColour:
         serializedVersion: 2
         key0: {r: 0.37701684, g: 0.4264151, b: 0.0024136354, a: 1}
@@ -934,7 +871,7 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
     - tempreture: 50
       humidity: 100
-      heightMult: 1
+      heightMult: 0.4
       heightColour:
         serializedVersion: 2
         key0: {r: 0.036990643, g: 1, b: 0, a: 1}
@@ -997,7 +934,7 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
     - tempreture: 0
       humidity: 0
-      heightMult: 1
+      heightMult: 0.15
       heightColour:
         serializedVersion: 2
         key0: {r: 0.6881097, g: 0.9622642, b: 0.9467881, a: 1}
@@ -1058,67 +995,195 @@ MonoBehaviour:
         m_ColorSpace: -1
         m_NumColorKeys: 3
         m_NumAlphaKeys: 2
+    - tempreture: 100
+      humidity: 50
+      heightMult: 1.1
+      heightColour:
+        serializedVersion: 2
+        key0: {r: 0.79622644, g: 0.6491468, b: 0.18478456, a: 1}
+        key1: {r: 1, g: 0.53545433, b: 0, a: 1}
+        key2: {r: 0.6226415, g: 0.4568102, b: 0.055215348, a: 0}
+        key3: {r: 0.96981126, g: 0.66047496, b: 0, a: 0}
+        key4: {r: 0.6603774, g: 0.3777684, b: 0, a: 0}
+        key5: {r: 0.6226415, g: 0.50107116, b: 0.050516147, a: 0}
+        key6: {r: 1, g: 0.48476982, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 5166
+        ctime1: 15343
+        ctime2: 23207
+        ctime3: 38010
+        ctime4: 41711
+        ctime5: 55127
+        ctime6: 65535
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 7
+        m_NumAlphaKeys: 2
+      seaColour:
+        serializedVersion: 2
+        key0: {r: 0, g: 0.36562252, b: 0.4716981, a: 1}
+        key1: {r: 0, g: 0.63448876, b: 0.81886786, a: 1}
+        key2: {r: 0.6396227, g: 1, b: 0.9220019, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 1157
+        ctime1: 31380
+        ctime2: 65535
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 3
+        m_NumAlphaKeys: 2
+    - tempreture: 100
+      humidity: 30
+      heightMult: 1.3
+      heightColour:
+        serializedVersion: 2
+        key0: {r: 0.2981131, g: 0.2981131, b: 0.2981131, a: 1}
+        key1: {r: 0.4264151, g: 0.4264151, b: 0.4264151, a: 1}
+        key2: {r: 0.5018867, g: 0.5018867, b: 0.5018867, a: 0}
+        key3: {r: 0.4113207, g: 0.4113207, b: 0.4113207, a: 0}
+        key4: {r: 0.335849, g: 0.335849, b: 0.335849, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 5166
+        ctime1: 15343
+        ctime2: 28450
+        ctime3: 48496
+        ctime4: 61449
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 5
+        m_NumAlphaKeys: 2
+      seaColour:
+        serializedVersion: 2
+        key0: {r: 0.85660374, g: 0.45584476, b: 0, a: 1}
+        key1: {r: 0.509434, g: 0.053765327, b: 0.002883547, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 1157
+        ctime1: 65535
+        ctime2: 0
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 2
     maps:
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 500
+      scale: 1000
       maxHeight: 300
       gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 300
+      scale: 600
       maxHeight: 200
       gradientDampening: 1
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 50
+      scale: 100
       maxHeight: 40
-      gradientDampening: 3
+      gradientDampening: 2
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 20
+      scale: 30
       maxHeight: 15
-      gradientDampening: 5
+      gradientDampening: 10
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 5
+      scale: 15
       maxHeight: 3
       gradientDampening: 6
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 3
-      maxHeight: 2
-      gradientDampening: 3
+      scale: 8
+      maxHeight: 1
+      gradientDampening: 5
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 1
-      maxHeight: 0.25
-      gradientDampening: 3
+      maxHeight: 0.1
+      gradientDampening: 10.3
     TempretureMap:
       position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 3578
+      scale: 3242
       maxHeight: 100
       gradientDampening: 0
     HumidityMap:
       position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 5000
+      scale: 4237
       maxHeight: 100
       gradientDampening: 0
     Depth: 0
     biomeBuffer: []
     minLayer: 0
   WL: []
+  bhm: 0
+  bi: 0
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0

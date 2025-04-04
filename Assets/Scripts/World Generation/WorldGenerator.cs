@@ -114,11 +114,11 @@ public class WorldGenerator : MonoBehaviour
                 }
                 maps[e].maxHeight = maps[e].maxHeight/Depth;
             }
-            biomeBuffer = new Vector3[copyFrom.biomes.Count];
+            biomeBuffer = new Vector4[copyFrom.biomes.Count];
             int i = 0;
             foreach (Biome biome in copyFrom.biomes)
             {
-                biomeBuffer[i] = new Vector3(biome.tempreture,biome.humidity,i);
+                biomeBuffer[i] = new Vector4(biome.tempreture,biome.humidity,i,biome.heightMult);
                 biomes.Add(new Biome(biome));
                 i++;
             }
@@ -131,7 +131,7 @@ public class WorldGenerator : MonoBehaviour
         [HideInInspector]
         public float Depth;
         [HideInInspector]
-        public Vector3[] biomeBuffer;
+        public Vector4[] biomeBuffer;
 
         public int minLayer;
     }
@@ -295,7 +295,7 @@ public class WorldGenerator : MonoBehaviour
         return Worklayer;
     }
 
-    public int[] biomes(Chunk chunk, workingLayer Worklayer)
+    public Vector2[] biomes(Chunk chunk, workingLayer Worklayer)
     {
         float range = ((mapsize * threadCountAndMapMult) - 3) * Worklayer.ML.TempretureMap.scale;
         Vector3 chunkoffset = (chunk.transform.position - new Vector3(chunk.chunkSize / 2, 0, chunk.chunkSize / 2)) - Worklayer.ML.TempretureMap.position;
@@ -411,7 +411,9 @@ public class WorldGenerator : MonoBehaviour
         return setShaderValuesK5(currTempBuffer, currHumidityBuffer, chunk, Worklayer.ML.HumidityMap.maxHeight);
 
     }
-    public void setChunkArrays(float[] heightData, int[] biomeData, workingLayer workLayer, Chunk chunk)
+    public float bhm = 0;
+    public float bi = 0;
+    public void setChunkArrays(float[] heightData, Vector2[] biomeData, workingLayer workLayer, Chunk chunk)
     {
         float[] baseWorldHeight = setShaderValuesK3(baseWorldMap, chunk);
         float[,] heights = new float[(chunkSize+1), (chunkSize+1)];
@@ -426,11 +428,14 @@ public class WorldGenerator : MonoBehaviour
         {
             for (int y = 0; y < (chunkSize + 1); y++)
             {
-                int biomeIndex = biomeData[y * (chunkSize + 1) + x];
+                int biomeIndex = Mathf.RoundToInt(biomeData[y * (chunkSize + 1) + x].x);
+                float biomeHeightMult = biomeData[y * (chunkSize + 1) + x].y;
                 Biome bio = workLayer.ML.biomes[biomeIndex];
-
+                bi = biomeIndex;
                 float currBaseHeight = (baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.maxHeight) * currBaseAmp;
-                float h = currBaseHeight + (heightData[y * (chunkSize + 1) + x] );//* bio.heightMult
+                float landHeight = (heightData[y * (chunkSize + 1) + x] * biomeHeightMult);
+                bhm = biomeHeightMult;
+                float h = currBaseHeight + landHeight;
 
                 float currWaterLevel = baseWorldSeaLevel;
                 if (currBaseHeight > (baseWorldSeaLevel * (1 - riverAndLakeDensity)))
@@ -439,17 +444,17 @@ public class WorldGenerator : MonoBehaviour
                 }
                 if (h < currWaterLevel)
                 {
-                    float waterDepth = heightData[y * (chunkSize + 1) + x] / (currWaterLevel-currBaseHeight);
+                    float waterDepth = landHeight / (currWaterLevel-currBaseHeight);
                     //heights[x, y] = (waterDepth * currWaterLevel) + currBaseHeight;
                     //WaterHeights[x, y] = (((currWaterLevel - 0.002f - ((currWaterLevel - h) * 0.3f * (1 - waterDepth)))));
-                    heights[x, y] = currBaseHeight + (heightData[y * (chunkSize + 1) + x]*(waterDepth));
-                    float waterHeight = Mathf.Clamp(currWaterLevel - (heightData[y * (chunkSize + 1) + x] * (1 - waterDepth) * 0.1f)-0.003f,baseWorldSeaLevel- (heightData[y * (chunkSize + 1) + x] * (waterDepth)*0.1f) - 0.003f, 1);
+                    heights[x, y] = currBaseHeight + (landHeight * (waterDepth));
+                    float waterHeight = Mathf.Clamp(currWaterLevel - (landHeight * (1 - waterDepth) * 0.1f)-0.003f,baseWorldSeaLevel- (landHeight * (waterDepth)*0.1f) - 0.003f, 1);
                     WaterHeights[x, y] = waterHeight-0.001f;
                     
                     if (x < chunkSize && y < chunkSize)
                         water[x, y] = true;
                     WaterTexture.SetPixel(y, x, bio.seaColour.Evaluate(waterDepth) * new Color(1f, 1f, 1f, 0.01f));
-                    SurfaceTexture.SetPixel(y, x, (bio.seaColour.Evaluate(waterDepth) + bio.heightColour.Evaluate(h)) / 2);
+                    SurfaceTexture.SetPixel(y, x, (bio.seaColour.Evaluate(waterDepth) + (bio.heightColour.Evaluate(0)*3)) / 4);
                 }
                 else
                 {
@@ -457,7 +462,7 @@ public class WorldGenerator : MonoBehaviour
                
                     if (x < chunkSize && y < chunkSize)
                         water[x, y] = false;
-                    SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate((h- currWaterLevel) / (1- currWaterLevel)));
+                    SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate((h-currWaterLevel)/((currBaseAmp+((1-currBaseAmp) *biomeHeightMult))-currWaterLevel)));
                 }
               
 
@@ -665,19 +670,20 @@ public class WorldGenerator : MonoBehaviour
         currHeightBuffer.Release();
         return heights;
     }
-    public int[] setShaderValuesK4(ComputeBuffer m1, ComputeBuffer m2, Chunk chunk, workingLayer Worklayer)
+    public Vector2[] setShaderValuesK4(ComputeBuffer m1, ComputeBuffer m2, Chunk chunk, workingLayer Worklayer)
     {
         int dispatchSize = Mathf.CeilToInt((chunk.chunkSize + 1) / threadCountAndMapMult) + 1;
-        ComputeBuffer bb = new ComputeBuffer(Worklayer.ML.biomes.Count, sizeof(float) * 3);
+        ComputeBuffer bb = new ComputeBuffer(Worklayer.ML.biomes.Count, sizeof(float) * 4);
         bb.SetData(Worklayer.ML.biomeBuffer);
-        ComputeBuffer MapBiomes = new ComputeBuffer((1 + chunk.chunkSize) * (1 + chunk.chunkSize), sizeof(int));
+        ComputeBuffer MapBiomes = new ComputeBuffer((1 + chunk.chunkSize) * (1 + chunk.chunkSize), 2*sizeof(float));
         compNoise.SetBuffer(3, "TempMap", m1);
         compNoise.SetBuffer(3, "HumidityMap", m2);
         compNoise.SetBuffer(3, "BiomeMap", bb);
         compNoise.SetBuffer(3, "biomeResult", MapBiomes);
         compNoise.SetInt("biomeCount", Worklayer.ML.biomes.Count);
         compNoise.Dispatch(3, dispatchSize, dispatchSize, 1);
-        int[] biomeData = new int[(1 + chunk.chunkSize) * (1 + chunk.chunkSize)];
+        Vector2[] biomeData = new Vector2[(1 + chunk.chunkSize) * (1 + chunk.chunkSize)];
+
         MapBiomes.GetData(biomeData);
         MapBiomes.Release();
         m1.Release();
@@ -688,19 +694,21 @@ public class WorldGenerator : MonoBehaviour
     public float[] setShaderValuesK5(ComputeBuffer m1, ComputeBuffer m2, Chunk chunk, float compMapMult)
     {
         ComputeBuffer compValue = new ComputeBuffer((1 + chunk.chunkSize) * (1 + chunk.chunkSize), sizeof(float));
-
         compNoise.SetBuffer(4, "TempMap", m1);
         compNoise.SetBuffer(4, "HumidityMap", m2);
         compNoise.SetBuffer(4, "compResult", compValue);
+        
         compNoise.SetFloat("compMapMult", compMapMult);
 
         int dispatchSize = Mathf.CeilToInt((chunk.chunkSize + 1) / threadCountAndMapMult) + 1;
         compNoise.Dispatch(3, dispatchSize, dispatchSize, 1);
         float[] compData = new float[(1 + chunk.chunkSize) * (1 + chunk.chunkSize)];
         compValue.GetData(compData);
+        
         m1.Release();
         m2.Release();
         compValue.Release();
+        
         return(compData);
     }
 }
