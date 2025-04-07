@@ -1,6 +1,8 @@
 using System.Collections.Generic;
 using UnityEngine;
 using System.Collections;
+using static WorldGenerator;
+using Unity.VisualScripting;
 public class WorldGenerator : MonoBehaviour
 {
     [Header("Chunk Settings")]
@@ -21,7 +23,7 @@ public class WorldGenerator : MonoBehaviour
     public int Layer;
     [HideInInspector]
     public float layerOffset;
-
+    public Map FoliageDensityMap;
     public Map baseWorldMap;
     [Range(0f, 1f)]
     public float baseWorldSeaLevel;
@@ -41,7 +43,19 @@ public class WorldGenerator : MonoBehaviour
     public int maxLayersSaved;
     public List<MapLayer> layers = new List<MapLayer>();
 
+    public int normalMapRes = 100;
+
     //public GameObject debugMap;
+    [System.Serializable]
+    public class worldObjects
+    {
+        public GameObject obj;
+        public float minHeight;
+        public float maxHeight;
+        public float minWidth;
+        public float maxWidth;
+        public int spawnChance;
+    }
     [System.Serializable]
     public class Map
     {
@@ -80,12 +94,27 @@ public class WorldGenerator : MonoBehaviour
             heightColour = copyFrom.heightColour;
             seaColour = copyFrom.seaColour;
             heightMult = copyFrom.heightMult;
+            foliageSpawnDensity = copyFrom.foliageSpawnDensity;
+            NormalMap = copyFrom.NormalMap;
+            NormalMapScale = copyFrom.NormalMapScale;
+            foreach (worldObjects GO in copyFrom.Folliage)
+            {
+                for(int i = 0; i < GO.spawnChance; i++)
+                {
+                    Folliage.Add(GO);
+                }
+            }
         }
         public float tempreture;
         public float humidity;
         public float heightMult;
         public Gradient heightColour;
         public Gradient seaColour;
+        [Range(0f,1f)]
+        public float foliageSpawnDensity;
+        public Texture2D NormalMap;
+        public float NormalMapScale;
+        public List<worldObjects> Folliage = new List<worldObjects>();
         
     }
 
@@ -144,7 +173,9 @@ public class WorldGenerator : MonoBehaviour
         {
             seed = Random.Range(0, 10000);
         }
+        Random.InitState(seed);
         baseWorldMap.offset = new Vector3(Random.Range(0, 99999), Random.Range(0, 99999));
+        FoliageDensityMap.offset = new Vector3(Random.Range(0, 99999), Random.Range(0, 99999));
         LastLoadPoint = Player.transform.position;
         LastLoadPoint.y = 0;
         chunkSize = Mathf.ClosestPowerOfTwo(chunkSize);
@@ -260,9 +291,11 @@ public class WorldGenerator : MonoBehaviour
     {
         if (!checkMapRange(chunk, baseWorldMap))
         {
-            mapItterations[0]++;
-            Debug.Log("Maps generated from Layer 0 = " + mapItterations[0]);
             setShaderValuesK1(baseWorldMap, chunk);
+        }
+        if (!checkMapRange(chunk, FoliageDensityMap))
+        {
+            setShaderValuesK1(FoliageDensityMap, chunk);
         }
         chunk.usedMaps = new Vector3[Worklayer.ML.maps.Count];
         compNoise.SetFloat("depth", chunk.depth);
@@ -411,19 +444,29 @@ public class WorldGenerator : MonoBehaviour
         return setShaderValuesK5(currTempBuffer, currHumidityBuffer, chunk, Worklayer.ML.HumidityMap.maxHeight);
 
     }
-    public float bhm = 0;
-    public float bi = 0;
+
     public void setChunkArrays(float[] heightData, Vector2[] biomeData, workingLayer workLayer, Chunk chunk)
     {
         float[] baseWorldHeight = setShaderValuesK3(baseWorldMap, chunk);
+        float[] FoliageDensity = setShaderValuesK3(FoliageDensityMap, chunk);
         float[,] heights = new float[(chunkSize+1), (chunkSize+1)];
         float[,] WaterHeights = new float[(chunkSize+1), (chunkSize+1)];
         bool[,] water = new bool[(chunkSize), (chunkSize)];
         Texture2D SurfaceTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
         Texture2D WaterTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
-        chunk.depth = workLayer.ML.Depth+baseWorldMap.maxHeight;
+        Texture2D NormalMap = new Texture2D((chunkSize + 1)* normalMapRes, (chunkSize + 1)* normalMapRes, TextureFormat.RGBA32, false, true);
+  
+        NormalMap.Apply(true);
+        NormalMap.name = "GeneratedNormalMap";
+        NormalMap.anisoLevel = 4;
+        NormalMap.wrapMode = TextureWrapMode.Repeat;
+        NormalMap.filterMode = FilterMode.Bilinear;
+        NormalMap.Apply();
+        chunk.depth = workLayer.ML.Depth;
         float currBaseAmp = baseWorldMap.maxHeight / chunk.depth;
-        
+
+        Random.InitState(Mathf.RoundToInt(seed * chunk.transform.position.x+chunk.transform.position.y* chunk.transform.position.x + seed));
+
         for (int x = 0; x < (chunkSize + 1); x++)
         {
             for (int y = 0; y < (chunkSize + 1); y++)
@@ -431,11 +474,17 @@ public class WorldGenerator : MonoBehaviour
                 int biomeIndex = Mathf.RoundToInt(biomeData[y * (chunkSize + 1) + x].x);
                 float biomeHeightMult = biomeData[y * (chunkSize + 1) + x].y;
                 Biome bio = workLayer.ML.biomes[biomeIndex];
-                bi = biomeIndex;
                 float currBaseHeight = (baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.maxHeight) * currBaseAmp;
                 float landHeight = (heightData[y * (chunkSize + 1) + x] * biomeHeightMult);
-                bhm = biomeHeightMult;
                 float h = currBaseHeight + landHeight;
+                Vector2Int NormalMapSamplePoint = new Vector2Int((y+Mathf.FloorToInt(chunk.transform.position.x)) % bio.NormalMap.width, (x + Mathf.FloorToInt(chunk.transform.position.y)) % bio.NormalMap.height);
+                for (int i = 0; i < normalMapRes; i++)
+                {
+                    for (int j = 0; j < normalMapRes; j++)
+                    {
+                        NormalMap.SetPixel((y* normalMapRes) +i, (x * normalMapRes) + j, bio.NormalMap.GetPixel(Mathf.FloorToInt((NormalMapSamplePoint.x+j)*bio.NormalMapScale)%bio.NormalMap.width, Mathf.FloorToInt((NormalMapSamplePoint.y+i) * bio.NormalMapScale) % bio.NormalMap.height));
+                    }
+                }
 
                 float currWaterLevel = baseWorldSeaLevel;
                 if (currBaseHeight > (baseWorldSeaLevel * (1 - riverAndLakeDensity)))
@@ -445,8 +494,6 @@ public class WorldGenerator : MonoBehaviour
                 if (h < currWaterLevel)
                 {
                     float waterDepth = landHeight / (currWaterLevel-currBaseHeight);
-                    //heights[x, y] = (waterDepth * currWaterLevel) + currBaseHeight;
-                    //WaterHeights[x, y] = (((currWaterLevel - 0.002f - ((currWaterLevel - h) * 0.3f * (1 - waterDepth)))));
                     heights[x, y] = currBaseHeight + (landHeight * (waterDepth));
                     float waterHeight = Mathf.Clamp(currWaterLevel - (landHeight * (1 - waterDepth) * 0.1f)-0.003f,baseWorldSeaLevel- (landHeight * (waterDepth)*0.1f) - 0.003f, 1);
                     WaterHeights[x, y] = waterHeight-0.001f;
@@ -459,7 +506,21 @@ public class WorldGenerator : MonoBehaviour
                 else
                 {
                     heights[x, y] = h;
-               
+                    if(FoliageDensityMap.maxHeight != 0 && bio.Folliage.Count>0)
+                    {
+                        if (Random.Range(0f, FoliageDensityMap.maxHeight) < FoliageDensity[y * (chunkSize + 1) + x]* bio.foliageSpawnDensity*0.01f)
+                        {
+                            worldObjects obj = bio.Folliage[Random.Range(0, bio.Folliage.Count)];
+                            GameObject spawnObj = obj.obj;
+                            float widthMult = Random.Range(obj.minWidth, obj.maxWidth);
+                            float heightMult = Random.Range(obj.minHeight, obj.maxHeight);
+                            Quaternion rotation = Quaternion.Euler(0, Random.Range(0f,360f), 0);
+                            Vector3 pos = new Vector3(chunk.transform.position.x+y,chunk.depth*h+ ((spawnObj.transform.localScale.y * heightMult) /2), chunk.transform.position.z+x);
+                            GameObject newObj = Instantiate(spawnObj, pos, rotation, chunk.transform);
+                            newObj.transform.localScale = new Vector3(spawnObj.transform.localScale.x * widthMult, spawnObj.transform.localScale.y * heightMult, spawnObj.transform.localScale.z * widthMult);
+                        }
+                    }
+                    
                     if (x < chunkSize && y < chunkSize)
                         water[x, y] = false;
                     SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate((h-currWaterLevel)/((currBaseAmp+((1-currBaseAmp) *biomeHeightMult))-currWaterLevel)));
@@ -468,9 +529,11 @@ public class WorldGenerator : MonoBehaviour
 
             }
         }
+        
+        NormalMap.Apply();
         SurfaceTexture.Apply();
         WaterTexture.Apply();
-        chunk.drawMap(heights,SurfaceTexture,WaterHeights,water,WaterTexture);
+        chunk.drawMap(heights,SurfaceTexture,WaterHeights,water,WaterTexture, NormalMap);
     }
 
     //cave generation not yet finished

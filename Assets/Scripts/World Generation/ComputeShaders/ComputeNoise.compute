@@ -117,8 +117,8 @@ void BiomeGen(uint3 id : SV_DispatchThreadID)
     float totalWeight = 0;
     float weightedHeight = 0;
     float maxDist = 0;
-    float exponent = 0.1;
-    float minBiomeBlend = 0.995;
+    float exponent = 0.3;
+    float minBiomeBlend = 0.975;
     for (int i = 0; i < biomeCount; i++)
     {
         float dist = length(pos - BiomeMap[i].xy);
@@ -136,7 +136,7 @@ void BiomeGen(uint3 id : SV_DispatchThreadID)
     {
         float dist = length(pos - BiomeMap[j].xy);
         
-        float weight = 1.0 / max(pow((dist - (minDist * minBiomeBlend)) / (maxDist - (minDist * minBiomeBlend)), exponent) * maxDist, 0.001);
+        float weight = 1.0 / max(pow((dist - (minDist * minBiomeBlend)) / (maxDist - (minDist * minBiomeBlend)), exponent) * (maxDist - (minDist * minBiomeBlend)), 0.0001);
 
         weightedHeight += weight * BiomeMap[j].w;
         totalWeight += weight;

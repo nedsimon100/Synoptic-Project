@@ -15,10 +15,10 @@ public class ChunkGeneration : MonoBehaviour
     public Terrain T2;
     public float depth = 100;
     public Vector3[] usedMaps;
-
+    Material terrainMaterial;
     public void drawMap(float[,] heightData, Texture2D FloorTexture, bool[,] holeArray)
     {
-        
+
       
 
         terrain = this.GetComponent<Terrain>();

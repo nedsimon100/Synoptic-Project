@@ -54,6 +54,7 @@ MonoBehaviour:
   depth: 0
   layer: 0
   usedMaps: []
+  terrainMaterial: {fileID: 2100000, guid: b7b43830d438fae49b625b42a75581de, type: 2}
 --- !u!1 &1779280765726266734
 GameObject:
   m_ObjectHideFlags: 0
