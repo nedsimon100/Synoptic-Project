@@ -9,6 +9,7 @@ public class FPSController : MonoBehaviour
     public float yRotation;
     public float xRotation;
     public Rigidbody rb;
+    public GameObject camObj;
 
     public bool physics = true;
     // Start is called once before the first execution of Update after the MonoBehaviour is created
@@ -70,6 +71,8 @@ public class FPSController : MonoBehaviour
         xRotation -= mouseY;
         xRotation = Mathf.Clamp(xRotation, -90f, 90f);
 
-        transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
+        transform.rotation = Quaternion.Euler(0, yRotation, 0);
+
+        camObj.transform.rotation = Quaternion.Euler(xRotation, yRotation, 0);
     }
 }

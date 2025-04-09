@@ -64,25 +64,27 @@ float3 BiCubicInterpolate(float2 pos)   // x is height, (y,z) is gradient // bic
 [numthreads(16,16,1)]
 void firstMapGen (uint3 id : SV_DispatchThreadID)
 {
+    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
+    {
     float2 pos = workMapPosition + (id.xy * workMapScale);
     
     float height = GenRandomPoint(pos + workMapoffset) * workMapAmplitude;
-    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
-    {
+    
         Result[id.y * WorkMapSize + id.x] = height;
     }
 }
 [numthreads(16, 16, 1)]
 void MidMapGen(uint3 id : SV_DispatchThreadID)
 {
+    if (id.x < (uint) WorkMapSize && id.y < (uint) WorkMapSize)
+    {
     float2 pos = workMapPosition + (id.xy * workMapScale);
     
     float3 ans = BiCubicInterpolate(pos);
     float height = ans.x;
     float2 gradient = ans.yz;
     
-    if (id.x < (uint) WorkMapSize && id.y < (uint) WorkMapSize)
-    {
+    
         // Add small epsilon to prevent division by zero
         float gradientEffect = (length(gradient) * workMapGradientDampening * depth) + 1;
         Result[id.y * WorkMapSize + id.x] = height + ((GenRandomPoint(pos + workMapoffset) * workMapAmplitude) / gradientEffect);
@@ -91,12 +93,13 @@ void MidMapGen(uint3 id : SV_DispatchThreadID)
 [numthreads(16, 16, 1)]
 void FinalMapGen(uint3 id : SV_DispatchThreadID)
 {
+    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
+    {
     float2 pos = workMapPosition + (id.yx * workMapScale);
     
     float height = BiCubicInterpolate(pos).x;
    
-    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
-    {
+    
         Result[id.y * (WorkMapSize) + id.x] = height; // this is correct
     }
 }
@@ -108,6 +111,8 @@ RWStructuredBuffer<float2> biomeResult;
 [numthreads(16,16,1)]
 void BiomeGen(uint3 id : SV_DispatchThreadID)
 {
+    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
+    {
     float2 pos = float2(TempMap[id.y * (WorkMapSize) + id.x], HumidityMap[id.y * (WorkMapSize) + id.x]);
     
     float minDist=100;
@@ -118,7 +123,7 @@ void BiomeGen(uint3 id : SV_DispatchThreadID)
     float weightedHeight = 0;
     float maxDist = 0;
     float exponent = 0.3;
-    float minBiomeBlend = 0.975;
+    float minBiomeBlend = 1;
     for (int i = 0; i < biomeCount; i++)
     {
         float dist = length(pos - BiomeMap[i].xy);
@@ -136,7 +141,8 @@ void BiomeGen(uint3 id : SV_DispatchThreadID)
     {
         float dist = length(pos - BiomeMap[j].xy);
         
-        float weight = 1.0 / max(pow((dist - (minDist * minBiomeBlend)) / (maxDist - (minDist * minBiomeBlend)), exponent) * (maxDist - (minDist * minBiomeBlend)), 0.0001);
+            float weight = 1.0 / max(pow(((dist + minBiomeBlend) - minDist) / ((maxDist + minBiomeBlend) - minDist), exponent) * ((maxDist + minBiomeBlend) - minDist), 
+            0.0001);
 
         weightedHeight += weight * BiomeMap[j].w;
         totalWeight += weight;
@@ -144,8 +150,7 @@ void BiomeGen(uint3 id : SV_DispatchThreadID)
 
     float height = (totalWeight > 0) ? (weightedHeight / totalWeight) : 0; // Normalize height
 
-    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
-    {
+    
         biomeResult[id.y * WorkMapSize + id.x] = float2(Biome, height);
     }
 
@@ -155,12 +160,13 @@ RWStructuredBuffer<float> compResult;
 [numthreads(16, 16, 1)]
 void MapComparison(uint3 id : SV_DispatchThreadID)
 {
+    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
+    {
     float2 pos = float2(TempMap[id.y * (WorkMapSize) + id.x], HumidityMap[id.y * (WorkMapSize) + id.x]);
     
     float diff = pos.x - (((pos.y - 0.5) * compMapMult)+0.5);
     
-    if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
-    {
+    
         compResult[id.y * (WorkMapSize) + id.x] = diff; // this is correct
     }
 }

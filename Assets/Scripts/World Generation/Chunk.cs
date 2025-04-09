@@ -66,15 +66,24 @@ public class Chunk : MonoBehaviour
     }
     private void ApplyTextureToTerrain(Texture2D texture, Terrain terrain, Texture2D normalMap)
     {
-        terrainMaterial.EnableKeyword("_NORMALMAP");
-        terrainMaterial.SetTexture("_BumpMap", normalMap);
+        //terrainMaterial.EnableKeyword("_NORMALMAP");
+        //terrainMaterial.SetTexture("_BumpMap", normalMap);
         terrain.materialTemplate = terrainMaterial;
         TerrainLayer terrainLayer = new TerrainLayer();
+
+        Texture2D maskMap = new Texture2D(4, 4);
+        Color32[] pixels = new Color32[16];
+        for (int i = 0; i < pixels.Length; i++) pixels[i] = new Color32(0, 255, 255, 0);
+        maskMap.SetPixels32(pixels);
+        maskMap.Apply();
+        terrainLayer.maskMapTexture = maskMap;
+
         terrainLayer.diffuseTexture = texture;
         terrainLayer.normalMapTexture = normalMap;
         terrainLayer.metallic = 0f;
         terrainLayer.smoothness = 0f;
         terrainLayer.normalScale = 1f;
+
         terrainLayer.tileSize = new Vector2(chunkSize, chunkSize);
         terrain.terrainData.terrainLayers = new TerrainLayer[] { terrainLayer };
     }

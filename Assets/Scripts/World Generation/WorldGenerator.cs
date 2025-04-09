@@ -477,14 +477,9 @@ public class WorldGenerator : MonoBehaviour
                 float currBaseHeight = (baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.maxHeight) * currBaseAmp;
                 float landHeight = (heightData[y * (chunkSize + 1) + x] * biomeHeightMult);
                 float h = currBaseHeight + landHeight;
-                Vector2Int NormalMapSamplePoint = new Vector2Int((y+Mathf.FloorToInt(chunk.transform.position.x)) % bio.NormalMap.width, (x + Mathf.FloorToInt(chunk.transform.position.y)) % bio.NormalMap.height);
-                for (int i = 0; i < normalMapRes; i++)
-                {
-                    for (int j = 0; j < normalMapRes; j++)
-                    {
-                        NormalMap.SetPixel((y* normalMapRes) +i, (x * normalMapRes) + j, bio.NormalMap.GetPixel(Mathf.FloorToInt((NormalMapSamplePoint.x+j)*bio.NormalMapScale)%bio.NormalMap.width, Mathf.FloorToInt((NormalMapSamplePoint.y+i) * bio.NormalMapScale) % bio.NormalMap.height));
-                    }
-                }
+                Vector2Int NormalMapSamplePoint = new Vector2Int(Mathf.FloorToInt(Mathf.Repeat(y + chunk.transform.position.x, bio.NormalMap.width- normalMapRes)), Mathf.FloorToInt(Mathf.Repeat(x + chunk.transform.position.y, bio.NormalMap.height - normalMapRes)));
+                
+                NormalMap.SetPixels((y* normalMapRes), (x * normalMapRes),normalMapRes,normalMapRes, bio.NormalMap.GetPixels(Mathf.FloorToInt((NormalMapSamplePoint.x)*bio.NormalMapScale), Mathf.FloorToInt((NormalMapSamplePoint.y) * bio.NormalMapScale),normalMapRes,normalMapRes));
 
                 float currWaterLevel = baseWorldSeaLevel;
                 if (currBaseHeight > (baseWorldSeaLevel * (1 - riverAndLakeDensity)))
