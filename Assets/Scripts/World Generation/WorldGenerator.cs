@@ -537,7 +537,8 @@ public class WorldGenerator : MonoBehaviour
                             if (i < bio.heightLayers.Count - 1 && colourHeight > (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange))
                             {
                                 hl2 = bio.heightLayers[i + 1];
-                                BlendMult = (colourHeight - (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange)) / (bio.heightLayers[i + 1].MinHeight - (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange));
+                                float blendRange = Mathf.Min(bio.heightLayers[i + 1].MinHeight- bio.heightLayers[i].MinHeight, bio.heightLayers[i + 1].BlendRange);
+                                BlendMult = (colourHeight - (bio.heightLayers[i + 1].MinHeight - blendRange)) / (bio.heightLayers[i + 1].MinHeight - (bio.heightLayers[i + 1].MinHeight - blendRange));
                             }
                             hl = bio.heightLayers[i]; break;
                         }
@@ -560,10 +561,11 @@ public class WorldGenerator : MonoBehaviour
                     {
                         if (colourHeight > bio.heightLayers[i].MinHeight)
                         {
-                            if (i < bio.heightLayers.Count - 1 && colourHeight> (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange))
+                            if (i < bio.heightLayers.Count - 1 && colourHeight > (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange))
                             {
                                 hl2 = bio.heightLayers[i + 1];
-                                BlendMult = (colourHeight - (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange)) / (bio.heightLayers[i + 1].MinHeight - (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange));
+                                float blendRange = Mathf.Min(bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i].MinHeight, bio.heightLayers[i + 1].BlendRange);
+                                BlendMult = (colourHeight - (bio.heightLayers[i + 1].MinHeight - blendRange)) / (bio.heightLayers[i + 1].MinHeight - (bio.heightLayers[i + 1].MinHeight - blendRange));
                             }
                             hl = bio.heightLayers[i]; break;
                         }
@@ -612,7 +614,7 @@ public class WorldGenerator : MonoBehaviour
                 }
                 if (BlendMult != 0)
                 {
-                    int layerID2 = Mathf.FloorToInt(hl.MinHeight * 100) * 100 + biomeIndex;
+                    int layerID2 = Mathf.FloorToInt(hl2.MinHeight * 100) * 100 + biomeIndex;
 
                     int layerIndex2 = -1;
                     if (!biomesUsed.Contains(layerID2))
@@ -620,11 +622,11 @@ public class WorldGenerator : MonoBehaviour
                         biomesUsed.Add(layerID2);
                         float[,] sm = new float[chunkSize + 1, chunkSize + 1];
                         TerrainLayer tl = new TerrainLayer();
-                        tl.normalMapTexture = hl.NormalMap;
-                        tl.diffuseTexture = hl.DiffuseTexture;
+                        tl.normalMapTexture = hl2.NormalMap;
+                        tl.diffuseTexture = hl2.DiffuseTexture;
                         tl.smoothness = 0;
                         tl.metallic = 0;
-                        tl.tileSize = new Vector2(hl.NormalMapScale, hl.NormalMapScale);
+                        tl.tileSize = new Vector2(hl2.NormalMapScale, hl2.NormalMapScale);
                         tl.smoothnessSource = 0;
                         biomeLayer.Add(tl);
                         SplatMap.Add(sm);
@@ -635,8 +637,8 @@ public class WorldGenerator : MonoBehaviour
                         layerIndex2 = biomesUsed.IndexOf(layerID2);
                     }
                     SplatMap[layerIndex][x, y] = hl.weight*(1-BlendMult);
-                    SplatMap[layerIndex2][x, y] = hl.weight * BlendMult;
-                    baseSplat[x, y] = 1 - ((hl.weight * (1 - BlendMult))+ (hl.weight * BlendMult));
+                    SplatMap[layerIndex2][x, y] = hl2.weight * BlendMult;
+                    baseSplat[x, y] = 1 - ((hl.weight * (1 - BlendMult))+ (hl2.weight * BlendMult));
                 }
                 else
                 {

@@ -465,8 +465,8 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     offset: {x: 0, y: 0, z: 0}
     heightData: []
-    scale: 3000
-    maxHeight: 1000
+    scale: 1600
+    maxHeight: 800
     gradientDampening: 0
   baseWorldSeaLevel: 0.4
   riverAndLakeDensity: 0.6
@@ -585,7 +585,7 @@ MonoBehaviour:
           maxWidth: 12
           spawnChance: 1
       - MinHeight: -0.75
-        BlendRange: 0
+        BlendRange: 0.083
         foliageSpawnDensity: 0
         weight: 0.9
         NormalMap: {fileID: 2800000, guid: 6719d5dae258cee4198dcde61cc21ac3, type: 3}
@@ -593,7 +593,7 @@ MonoBehaviour:
         NormalMapScale: 10
         Folliage: []
       - MinHeight: 0
-        BlendRange: 0
+        BlendRange: 0.04
         foliageSpawnDensity: 0.1
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: 80403080a5b91254b985e58c7ed52375, type: 3}
@@ -613,7 +613,7 @@ MonoBehaviour:
           maxWidth: 4
           spawnChance: 1
       - MinHeight: 0.05
-        BlendRange: 0
+        BlendRange: 0.04
         foliageSpawnDensity: 0.03
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: 6719d5dae258cee4198dcde61cc21ac3, type: 3}
@@ -727,7 +727,7 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
       heightLayers:
       - MinHeight: -1
-        BlendRange: 0.359
+        BlendRange: 0.04
         foliageSpawnDensity: 0
         weight: 0.7
         NormalMap: {fileID: 2800000, guid: b083905693e92bc46b3b688e6531ccfe, type: 3}
@@ -735,7 +735,7 @@ MonoBehaviour:
         NormalMapScale: 10
         Folliage: []
       - MinHeight: -0.45
-        BlendRange: 0.354
+        BlendRange: 0.045
         foliageSpawnDensity: 0
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: 6719d5dae258cee4198dcde61cc21ac3, type: 3}
@@ -743,7 +743,7 @@ MonoBehaviour:
         NormalMapScale: 10
         Folliage: []
       - MinHeight: 0.03
-        BlendRange: 0.354
+        BlendRange: 0.045
         foliageSpawnDensity: 0.126
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: e48b7f6189dc43541aa6128e69af76cf, type: 3}
@@ -763,8 +763,8 @@ MonoBehaviour:
           maxWidth: 10
           spawnChance: 3
       - MinHeight: 0.1
-        BlendRange: 0.375
-        foliageSpawnDensity: 0.3
+        BlendRange: 0.045
+        foliageSpawnDensity: 0.745
         weight: 0.641
         NormalMap: {fileID: 2800000, guid: 80403080a5b91254b985e58c7ed52375, type: 3}
         DiffuseTexture: {fileID: 2800000, guid: bd4c367b7fb07e74b84c114344caa56e, type: 3}
@@ -806,8 +806,20 @@ MonoBehaviour:
           minWidth: 1
           maxWidth: 2
           spawnChance: 4
+        - obj: {fileID: 919132149155446097, guid: 487118d299d49934db0f3af97c5eea88, type: 3}
+          minHeight: 1
+          maxHeight: 3
+          minWidth: 1
+          maxWidth: 2
+          spawnChance: 20
+        - obj: {fileID: 919132149155446097, guid: 45dc2dc68c5657046b9526bfcf97bfae, type: 3}
+          minHeight: 1
+          maxHeight: 3
+          minWidth: 1
+          maxWidth: 2
+          spawnChance: 4
       - MinHeight: 0.8
-        BlendRange: 0.359
+        BlendRange: 0.072
         foliageSpawnDensity: 0.146
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: b083905693e92bc46b3b688e6531ccfe, type: 3}
@@ -833,7 +845,7 @@ MonoBehaviour:
           maxWidth: 10
           spawnChance: 1
       - MinHeight: 0.92
-        BlendRange: 0.359
+        BlendRange: 0.056
         foliageSpawnDensity: 0.131
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: b083905693e92bc46b3b688e6531ccfe, type: 3}
@@ -947,7 +959,7 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
       heightLayers:
       - MinHeight: -1
-        BlendRange: 0.354
+        BlendRange: 1.997
         foliageSpawnDensity: 0
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: e48b7f6189dc43541aa6128e69af76cf, type: 3}
@@ -955,7 +967,7 @@ MonoBehaviour:
         NormalMapScale: 20
         Folliage: []
       - MinHeight: -0.2
-        BlendRange: 0.548
+        BlendRange: 0.04
         foliageSpawnDensity: 0.734
         weight: 0.6
         NormalMap: {fileID: 2800000, guid: e48b7f6189dc43541aa6128e69af76cf, type: 3}
@@ -999,7 +1011,7 @@ MonoBehaviour:
           maxWidth: 5
           spawnChance: 15
       - MinHeight: 0.9
-        BlendRange: 0.385
+        BlendRange: 0.051
         foliageSpawnDensity: 0.2
         weight: 0.6
         NormalMap: {fileID: 2800000, guid: b083905693e92bc46b3b688e6531ccfe, type: 3}
@@ -1113,7 +1125,7 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
       heightLayers:
       - MinHeight: -1
-        BlendRange: 0.37
+        BlendRange: 0.051
         foliageSpawnDensity: 0
         weight: 0.5
         NormalMap: {fileID: 2800000, guid: a7568caa849c5464d9a727a54e0ff2d6, type: 3}
@@ -1121,7 +1133,7 @@ MonoBehaviour:
         NormalMapScale: 4
         Folliage: []
       - MinHeight: 0
-        BlendRange: 0.39
+        BlendRange: 0.051
         foliageSpawnDensity: 0.189
         weight: 0.775
         NormalMap: {fileID: 2800000, guid: 80403080a5b91254b985e58c7ed52375, type: 3}
@@ -1241,7 +1253,7 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
       heightLayers:
       - MinHeight: -1
-        BlendRange: 0.39
+        BlendRange: 0.049
         foliageSpawnDensity: 0
         weight: 0.7
         NormalMap: {fileID: 2800000, guid: 358181dcc95ef874d880d4f6961ebc73, type: 3}
@@ -1343,15 +1355,15 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
       heightLayers:
       - MinHeight: -1
-        BlendRange: 0.333
-        foliageSpawnDensity: 0
+        BlendRange: 1.965
+        foliageSpawnDensity: 0.025
         weight: 0.5
         NormalMap: {fileID: 2800000, guid: a7568caa849c5464d9a727a54e0ff2d6, type: 3}
         DiffuseTexture: {fileID: 2800000, guid: 528e70a90fe26db42b652aa2e881f22d, type: 3}
         NormalMapScale: 10
         Folliage: []
       - MinHeight: -0.5
-        BlendRange: 0.344
+        BlendRange: 0.056
         foliageSpawnDensity: 0
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: 08f2b2d068657d4498be3b76c170fbb4, type: 3}
@@ -1359,7 +1371,7 @@ MonoBehaviour:
         NormalMapScale: 10
         Folliage: []
       - MinHeight: 0.124
-        BlendRange: 0.349
+        BlendRange: 0.078
         foliageSpawnDensity: 0.06
         weight: 0.595
         NormalMap: {fileID: 2800000, guid: a7568caa849c5464d9a727a54e0ff2d6, type: 3}
@@ -1378,8 +1390,8 @@ MonoBehaviour:
           minWidth: 2
           maxWidth: 4
           spawnChance: 2
-    - tempreture: 100
-      humidity: 30
+    - tempreture: 30
+      humidity: 2
       heightMult: 1.3
       heightColour:
         serializedVersion: 2
@@ -1413,8 +1425,8 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
       seaColour:
         serializedVersion: 2
-        key0: {r: 0.85660374, g: 0.45584476, b: 0, a: 1}
-        key1: {r: 0.509434, g: 0.053765327, b: 0.002883547, a: 1}
+        key0: {r: 0, g: 0.056002643, b: 0.21509439, a: 1}
+        key1: {r: 0.0039215535, g: 0.50980395, b: 0.43278706, a: 1}
         key2: {r: 0, g: 0, b: 0, a: 0}
         key3: {r: 0, g: 0, b: 0, a: 0}
         key4: {r: 0, g: 0, b: 0, a: 0}
@@ -1473,7 +1485,7 @@ MonoBehaviour:
         m_NumAlphaKeys: 2
       heightLayers:
       - MinHeight: -1
-        BlendRange: 0.335
+        BlendRange: 0.078
         foliageSpawnDensity: 0.253
         weight: 0.3
         NormalMap: {fileID: 2800000, guid: dc1193eea4657f542ae593df470c15d3, type: 3}
@@ -1496,7 +1508,7 @@ MonoBehaviour:
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 2000
+      scale: 1000
       maxHeight: 300
       gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
@@ -1504,7 +1516,7 @@ MonoBehaviour:
       heightData: []
       scale: 1000
       maxHeight: 200
-      gradientDampening: 1
+      gradientDampening: 3.38
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
@@ -1528,7 +1540,7 @@ MonoBehaviour:
       heightData: []
       scale: 15
       maxHeight: 1
-      gradientDampening: 7.6
+      gradientDampening: 17.22
     TempretureMap:
       position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
