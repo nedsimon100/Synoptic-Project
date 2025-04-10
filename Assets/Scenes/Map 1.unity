@@ -445,8 +445,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   maxChunksPerFrame: 1
   chunkSize: 246
-  LoadDist: 2
-  deletionDist: 6
+  LoadDist: 5
+  deletionDist: 8
   Player: {fileID: 196427280}
   seed: 0
   ChunkPrefab: {fileID: 1432234054492279794, guid: 972854f64563414459e6597732dc2adc, type: 3}
@@ -465,11 +465,11 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     offset: {x: 0, y: 0, z: 0}
     heightData: []
-    scale: 2057
-    maxHeight: 774
+    scale: 3000
+    maxHeight: 1000
     gradientDampening: 0
-  baseWorldSeaLevel: 0.15
-  riverAndLakeDensity: 0.7
+  baseWorldSeaLevel: 0.4
+  riverAndLakeDensity: 0.5
   compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
   threadCountAndMapMult: 16
   mapsize: 90
@@ -539,37 +539,114 @@ MonoBehaviour:
         m_ColorSpace: -1
         m_NumColorKeys: 3
         m_NumAlphaKeys: 2
-      foliageSpawnDensity: 0.02
-      NormalMap: {fileID: 2800000, guid: 08f2b2d068657d4498be3b76c170fbb4, type: 3}
-      NormalMapScale: 1
-      Folliage:
-      - obj: {fileID: 7011471998195131789, guid: 651f859c81062834d9ab48ef8de26f64, type: 3}
-        minHeight: 0.8
-        maxHeight: 1.2
-        minWidth: 0.5
-        maxWidth: 1.2
-        spawnChance: 5
-      - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
-        minHeight: 0.3
-        maxHeight: 1.2
-        minWidth: 0.5
-        maxWidth: 1.2
-        spawnChance: 2
+      seaFloorColour:
+        serializedVersion: 2
+        key0: {r: 0.5698112, g: 0.56774956, b: 0.3945674, a: 1}
+        key1: {r: 1, g: 1, b: 0, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 16422
+        ctime1: 17039
+        ctime2: 0
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 2
+      heightLayers:
+      - MinHeight: -1
+        BlendRange: 0
+        foliageSpawnDensity: 0.089
+        weight: 0.9
+        NormalMap: {fileID: 2800000, guid: b083905693e92bc46b3b688e6531ccfe, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: dac2604346fee7f4da287a28c9413e25, type: 3}
+        NormalMapScale: 10
+        Folliage:
+        - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
+          minHeight: 3
+          maxHeight: 10
+          minWidth: 5
+          maxWidth: 12
+          spawnChance: 1
+      - MinHeight: -0.75
+        BlendRange: 0
+        foliageSpawnDensity: 0
+        weight: 0.9
+        NormalMap: {fileID: 2800000, guid: 6719d5dae258cee4198dcde61cc21ac3, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 6e2360d403fa4ba4cbb044f7e651bd53, type: 3}
+        NormalMapScale: 10
+        Folliage: []
+      - MinHeight: 0
+        BlendRange: 0
+        foliageSpawnDensity: 0.1
+        weight: 0.8
+        NormalMap: {fileID: 2800000, guid: 80403080a5b91254b985e58c7ed52375, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: bd4c367b7fb07e74b84c114344caa56e, type: 3}
+        NormalMapScale: 4
+        Folliage:
+        - obj: {fileID: 7572767850197632249, guid: 11f885de44882414b921c677d3590185, type: 3}
+          minHeight: 1.5
+          maxHeight: 4
+          minWidth: 2
+          maxWidth: 4
+          spawnChance: 3
+        - obj: {fileID: 4770193490352403311, guid: 67584f110c000194c8c03226cbd776dd, type: 3}
+          minHeight: 2.5
+          maxHeight: 4
+          minWidth: 1
+          maxWidth: 4
+          spawnChance: 1
+      - MinHeight: 0.05
+        BlendRange: 0
+        foliageSpawnDensity: 0.03
+        weight: 0.8
+        NormalMap: {fileID: 2800000, guid: 6719d5dae258cee4198dcde61cc21ac3, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 6e2360d403fa4ba4cbb044f7e651bd53, type: 3}
+        NormalMapScale: 70
+        Folliage:
+        - obj: {fileID: 7011471998195131789, guid: 651f859c81062834d9ab48ef8de26f64, type: 3}
+          minHeight: 1.5
+          maxHeight: 4
+          minWidth: 2
+          maxWidth: 4
+          spawnChance: 3
+        - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
+          minHeight: 2.5
+          maxHeight: 4
+          minWidth: 1
+          maxWidth: 4
+          spawnChance: 1
     - tempreture: 20
       humidity: 20
       heightMult: 1.1
       heightColour:
         serializedVersion: 2
         key0: {r: 0.9517839, g: 1, b: 0.5943396, a: 1}
-        key1: {r: 0.2853086, g: 1, b: 0, a: 1}
+        key1: {r: 0.27273682, g: 0.972487, b: 0.011652588, a: 1}
         key2: {r: 0.12941174, g: 0.65882355, b: 0.14449826, a: 0}
         key3: {r: 0.48489136, g: 0.5320754, b: 0.48489136, a: 0}
         key4: {r: 0.46338728, g: 0.4641509, b: 0.4545176, a: 0}
         key5: {r: 1, g: 1, b: 1, a: 0}
         key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 1311
-        ctime1: 3007
+        ctime0: 2544
+        ctime1: 6091
         ctime2: 41249
         ctime3: 51426
         ctime4: 60832
@@ -618,46 +695,127 @@ MonoBehaviour:
         m_ColorSpace: -1
         m_NumColorKeys: 3
         m_NumAlphaKeys: 2
-      foliageSpawnDensity: 0.106
-      NormalMap: {fileID: 2800000, guid: 543dd3fde06b90e4386f9411fb80d973, type: 3}
-      NormalMapScale: 1
-      Folliage:
-      - obj: {fileID: 4770193490352403311, guid: 6874d3ae53cfd6840802b267d8a53cf2, type: 3}
-        minHeight: 1
-        maxHeight: 2
-        minWidth: 1
-        maxWidth: 1.5
-        spawnChance: 3
-      - obj: {fileID: 4770193490352403311, guid: 67584f110c000194c8c03226cbd776dd, type: 3}
-        minHeight: 1
-        maxHeight: 3
-        minWidth: 1
-        maxWidth: 2
-        spawnChance: 2
-      - obj: {fileID: 4770193490352403311, guid: 6f58e302cf38106418f6a836e9cd019c, type: 3}
-        minHeight: 1
-        maxHeight: 1.5
-        minWidth: 1
-        maxWidth: 2
-        spawnChance: 3
-      - obj: {fileID: 7572767850197632249, guid: b96219c850721a24893080fe4f11e6b7, type: 3}
-        minHeight: 0.8
-        maxHeight: 3
-        minWidth: 1
-        maxWidth: 2
-        spawnChance: 1
-      - obj: {fileID: 7572767850197632249, guid: 11f885de44882414b921c677d3590185, type: 3}
-        minHeight: 1
-        maxHeight: 5
-        minWidth: 1
-        maxWidth: 5
-        spawnChance: 3
-      - obj: {fileID: 7572767850197632249, guid: 11f885de44882414b921c677d3590185, type: 3}
-        minHeight: 0.8
-        maxHeight: 1.5
-        minWidth: 1
-        maxWidth: 2
-        spawnChance: 1
+      seaFloorColour:
+        serializedVersion: 2
+        key0: {r: 0.3132075, g: 0.3132075, b: 0.3132075, a: 1}
+        key1: {r: 1, g: 0.9259279, b: 0, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 36468
+        ctime1: 38010
+        ctime2: 0
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 2
+      heightLayers:
+      - MinHeight: -1
+        BlendRange: 0.183
+        foliageSpawnDensity: 0
+        weight: 0.7
+        NormalMap: {fileID: 2800000, guid: b083905693e92bc46b3b688e6531ccfe, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: dac2604346fee7f4da287a28c9413e25, type: 3}
+        NormalMapScale: 10
+        Folliage: []
+      - MinHeight: -0.45
+        BlendRange: 0.199
+        foliageSpawnDensity: 0
+        weight: 0.8
+        NormalMap: {fileID: 2800000, guid: 6719d5dae258cee4198dcde61cc21ac3, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 6e2360d403fa4ba4cbb044f7e651bd53, type: 3}
+        NormalMapScale: 10
+        Folliage: []
+      - MinHeight: 0.03
+        BlendRange: 0.323
+        foliageSpawnDensity: 0
+        weight: 0.8
+        NormalMap: {fileID: 2800000, guid: e48b7f6189dc43541aa6128e69af76cf, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 29a17bcdebfa2f64fb315b6c3b4be42a, type: 3}
+        NormalMapScale: 20
+        Folliage:
+        - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
+          minHeight: 2
+          maxHeight: 10
+          minWidth: 2
+          maxWidth: 10
+          spawnChance: 1
+      - MinHeight: 0.1
+        BlendRange: 0.416
+        foliageSpawnDensity: 0.3
+        weight: 0.641
+        NormalMap: {fileID: 2800000, guid: 80403080a5b91254b985e58c7ed52375, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: bd4c367b7fb07e74b84c114344caa56e, type: 3}
+        NormalMapScale: 8
+        Folliage:
+        - obj: {fileID: 4770193490352403311, guid: 67584f110c000194c8c03226cbd776dd, type: 3}
+          minHeight: 1
+          maxHeight: 3
+          minWidth: 1
+          maxWidth: 2
+          spawnChance: 1
+        - obj: {fileID: 4770193490352403311, guid: 6f58e302cf38106418f6a836e9cd019c, type: 3}
+          minHeight: 1
+          maxHeight: 3
+          minWidth: 1
+          maxWidth: 2
+          spawnChance: 1
+        - obj: {fileID: 4770193490352403311, guid: 6874d3ae53cfd6840802b267d8a53cf2, type: 3}
+          minHeight: 1
+          maxHeight: 3
+          minWidth: 1
+          maxWidth: 2
+          spawnChance: 3
+        - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
+          minHeight: 1
+          maxHeight: 3
+          minWidth: 1
+          maxWidth: 2
+          spawnChance: 3
+      - MinHeight: 0.8
+        BlendRange: 0.214
+        foliageSpawnDensity: 0.083
+        weight: 0.8
+        NormalMap: {fileID: 2800000, guid: b083905693e92bc46b3b688e6531ccfe, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: dac2604346fee7f4da287a28c9413e25, type: 3}
+        NormalMapScale: 30
+        Folliage:
+        - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
+          minHeight: 2
+          maxHeight: 10
+          minWidth: 2
+          maxWidth: 10
+          spawnChance: 1
+      - MinHeight: 0.92
+        BlendRange: 0.204
+        foliageSpawnDensity: 0
+        weight: 0.8
+        NormalMap: {fileID: 2800000, guid: b083905693e92bc46b3b688e6531ccfe, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: dac2604346fee7f4da287a28c9413e25, type: 3}
+        NormalMapScale: 30
+        Folliage:
+        - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
+          minHeight: 2
+          maxHeight: 10
+          minWidth: 2
+          maxWidth: 10
+          spawnChance: 1
     - tempreture: 100
       humidity: 100
       heightMult: 0.33
@@ -721,28 +879,85 @@ MonoBehaviour:
         m_ColorSpace: -1
         m_NumColorKeys: 4
         m_NumAlphaKeys: 2
-      foliageSpawnDensity: 0.658
-      NormalMap: {fileID: 2800000, guid: 543dd3fde06b90e4386f9411fb80d973, type: 3}
-      NormalMapScale: 1
-      Folliage:
-      - obj: {fileID: 4770193490352403311, guid: 6874d3ae53cfd6840802b267d8a53cf2, type: 3}
-        minHeight: 1
-        maxHeight: 1.3
-        minWidth: 1
-        maxWidth: 2
-        spawnChance: 2
-      - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
-        minHeight: 0.5
-        maxHeight: 2
-        minWidth: 0.5
-        maxWidth: 2
-        spawnChance: 1
-      - obj: {fileID: 7572767850197632249, guid: 11f885de44882414b921c677d3590185, type: 3}
-        minHeight: 0.5
-        maxHeight: 4
-        minWidth: 0.5
-        maxWidth: 4
-        spawnChance: 1
+      seaFloorColour:
+        serializedVersion: 2
+        key0: {r: 0, g: 0.3132075, b: 0.07865673, a: 1}
+        key1: {r: 0.37530065, g: 1, b: 0, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 0
+        ctime1: 65535
+        ctime2: 0
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 2
+      heightLayers:
+      - MinHeight: -1
+        BlendRange: 0.209
+        foliageSpawnDensity: 0
+        weight: 0.8
+        NormalMap: {fileID: 2800000, guid: e48b7f6189dc43541aa6128e69af76cf, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: bd4c367b7fb07e74b84c114344caa56e, type: 3}
+        NormalMapScale: 20
+        Folliage: []
+      - MinHeight: -0.2
+        BlendRange: 0.22
+        foliageSpawnDensity: 0.46
+        weight: 0.6
+        NormalMap: {fileID: 2800000, guid: e48b7f6189dc43541aa6128e69af76cf, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 29a17bcdebfa2f64fb315b6c3b4be42a, type: 3}
+        NormalMapScale: 20
+        Folliage:
+        - obj: {fileID: 4770193490352403311, guid: 6874d3ae53cfd6840802b267d8a53cf2, type: 3}
+          minHeight: 2
+          maxHeight: 3
+          minWidth: 3
+          maxWidth: 6
+          spawnChance: 2
+        - obj: {fileID: 4770193490352403311, guid: 6f58e302cf38106418f6a836e9cd019c, type: 3}
+          minHeight: 2
+          maxHeight: 5
+          minWidth: 4
+          maxWidth: 5
+          spawnChance: 1
+      - MinHeight: 0.9
+        BlendRange: 0.235
+        foliageSpawnDensity: 0.2
+        weight: 0.6
+        NormalMap: {fileID: 2800000, guid: b083905693e92bc46b3b688e6531ccfe, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: dac2604346fee7f4da287a28c9413e25, type: 3}
+        NormalMapScale: 20
+        Folliage:
+        - obj: {fileID: 7572767850197632249, guid: 11f885de44882414b921c677d3590185, type: 3}
+          minHeight: 2
+          maxHeight: 3
+          minWidth: 3
+          maxWidth: 6
+          spawnChance: 2
+        - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
+          minHeight: 2
+          maxHeight: 5
+          minWidth: 4
+          maxWidth: 5
+          spawnChance: 1
     - tempreture: 50
       humidity: 100
       heightMult: 0.4
@@ -806,28 +1021,71 @@ MonoBehaviour:
         m_ColorSpace: -1
         m_NumColorKeys: 3
         m_NumAlphaKeys: 2
-      foliageSpawnDensity: 0.752
-      NormalMap: {fileID: 2800000, guid: 543dd3fde06b90e4386f9411fb80d973, type: 3}
-      NormalMapScale: 1
-      Folliage:
-      - obj: {fileID: 4770193490352403311, guid: 6874d3ae53cfd6840802b267d8a53cf2, type: 3}
-        minHeight: 1
-        maxHeight: 2
-        minWidth: 1
-        maxWidth: 2
-        spawnChance: 1
-      - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
-        minHeight: 1
-        maxHeight: 4
-        minWidth: 1
-        maxWidth: 4
-        spawnChance: 1
-      - obj: {fileID: 7572767850197632249, guid: 11f885de44882414b921c677d3590185, type: 3}
-        minHeight: 1
-        maxHeight: 2
-        minWidth: 1
-        maxWidth: 2
-        spawnChance: 3
+      seaFloorColour:
+        serializedVersion: 2
+        key0: {r: 0.23773581, g: 0.10993489, b: 0.017493742, a: 1}
+        key1: {r: 0.2679245, g: 0.20464906, b: 0.1612602, a: 1}
+        key2: {r: 0.4792453, g: 0.19592126, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 0
+        ctime1: 31534
+        ctime2: 65535
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 3
+        m_NumAlphaKeys: 2
+      heightLayers:
+      - MinHeight: -1
+        BlendRange: 0.226
+        foliageSpawnDensity: 0
+        weight: 0.5
+        NormalMap: {fileID: 2800000, guid: a7568caa849c5464d9a727a54e0ff2d6, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 528e70a90fe26db42b652aa2e881f22d, type: 3}
+        NormalMapScale: 4
+        Folliage: []
+      - MinHeight: 0
+        BlendRange: 0.226
+        foliageSpawnDensity: 0.189
+        weight: 0.775
+        NormalMap: {fileID: 2800000, guid: 80403080a5b91254b985e58c7ed52375, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: bd4c367b7fb07e74b84c114344caa56e, type: 3}
+        NormalMapScale: 5
+        Folliage:
+        - obj: {fileID: 4770193490352403311, guid: 6874d3ae53cfd6840802b267d8a53cf2, type: 3}
+          minHeight: 2
+          maxHeight: 5
+          minWidth: 2
+          maxWidth: 3
+          spawnChance: 1
+        - obj: {fileID: 4770193490352403311, guid: 67584f110c000194c8c03226cbd776dd, type: 3}
+          minHeight: 2
+          maxHeight: 6
+          minWidth: 1
+          maxWidth: 3
+          spawnChance: 3
+        - obj: {fileID: 7572767850197632249, guid: 11f885de44882414b921c677d3590185, type: 3}
+          minHeight: 3
+          maxHeight: 6
+          minWidth: 2
+          maxWidth: 8
+          spawnChance: 3
     - tempreture: 0
       humidity: 0
       heightMult: 0.15
@@ -891,30 +1149,23 @@ MonoBehaviour:
         m_ColorSpace: -1
         m_NumColorKeys: 3
         m_NumAlphaKeys: 2
-      foliageSpawnDensity: 0.01
-      NormalMap: {fileID: 2800000, guid: 08f2b2d068657d4498be3b76c170fbb4, type: 3}
-      NormalMapScale: 1
-      Folliage: []
-    - tempreture: 100
-      humidity: 50
-      heightMult: 2
-      heightColour:
+      seaFloorColour:
         serializedVersion: 2
-        key0: {r: 0.79622644, g: 0.6491468, b: 0.18478456, a: 1}
-        key1: {r: 1, g: 0.53545433, b: 0, a: 1}
-        key2: {r: 0.6226415, g: 0.4568102, b: 0.055215348, a: 0}
-        key3: {r: 0.96981126, g: 0.66047496, b: 0, a: 0}
-        key4: {r: 0.6603774, g: 0.3777684, b: 0, a: 0}
-        key5: {r: 0.6226415, g: 0.50107116, b: 0.050516147, a: 0}
-        key6: {r: 1, g: 0.48476982, b: 0, a: 0}
+        key0: {r: 1, g: 1, b: 1, a: 1}
+        key1: {r: 1, g: 1, b: 1, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
         key7: {r: 0, g: 0, b: 0, a: 0}
-        ctime0: 5166
-        ctime1: 15343
-        ctime2: 23207
-        ctime3: 38010
-        ctime4: 41711
-        ctime5: 55127
-        ctime6: 65535
+        ctime0: 0
+        ctime1: 65535
+        ctime2: 0
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
         ctime7: 0
         atime0: 0
         atime1: 65535
@@ -926,7 +1177,49 @@ MonoBehaviour:
         atime7: 0
         m_Mode: 0
         m_ColorSpace: -1
-        m_NumColorKeys: 7
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 2
+      heightLayers:
+      - MinHeight: -1
+        BlendRange: 0.211
+        foliageSpawnDensity: 0
+        weight: 0.7
+        NormalMap: {fileID: 2800000, guid: 358181dcc95ef874d880d4f6961ebc73, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 160b216a95e2324409c078b6c1ba7265, type: 3}
+        NormalMapScale: 100
+        Folliage: []
+    - tempreture: 100
+      humidity: 50
+      heightMult: 5
+      heightColour:
+        serializedVersion: 2
+        key0: {r: 1, g: 0.7746479, b: 0, a: 1}
+        key1: {r: 1, g: 0.5086207, b: 0, a: 1}
+        key2: {r: 0.81886786, g: 0.02364744, b: 0, a: 0}
+        key3: {r: 1, g: 0.7073171, b: 0, a: 0}
+        key4: {r: 0.5320754, g: 0.03928071, b: 0, a: 0}
+        key5: {r: 1, g: 0.8000001, b: 0, a: 0}
+        key6: {r: 1, g: 0.32173914, b: 0, a: 0}
+        key7: {r: 1, g: 0.9027965, b: 0, a: 0}
+        ctime0: 5166
+        ctime1: 15343
+        ctime2: 22590
+        ctime3: 28913
+        ctime4: 38010
+        ctime5: 46337
+        ctime6: 55127
+        ctime7: 65535
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 8
         m_NumAlphaKeys: 2
       seaColour:
         serializedVersion: 2
@@ -958,22 +1251,73 @@ MonoBehaviour:
         m_ColorSpace: -1
         m_NumColorKeys: 3
         m_NumAlphaKeys: 2
-      foliageSpawnDensity: 0.169
-      NormalMap: {fileID: 2800000, guid: dc1193eea4657f542ae593df470c15d3, type: 3}
-      NormalMapScale: 1
-      Folliage:
-      - obj: {fileID: 7011471998195131789, guid: 651f859c81062834d9ab48ef8de26f64, type: 3}
-        minHeight: 1
-        maxHeight: 1.3
-        minWidth: 1
-        maxWidth: 1.3
-        spawnChance: 1
-      - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
-        minHeight: 1
-        maxHeight: 3
-        minWidth: 1
-        maxWidth: 3
-        spawnChance: 3
+      seaFloorColour:
+        serializedVersion: 2
+        key0: {r: 0.335849, g: 0, b: 0, a: 1}
+        key1: {r: 1, g: 0.93849885, b: 0, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 32151
+        ctime1: 33384
+        ctime2: 0
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 2
+      heightLayers:
+      - MinHeight: -1
+        BlendRange: 0.271
+        foliageSpawnDensity: 0
+        weight: 0.5
+        NormalMap: {fileID: 2800000, guid: a7568caa849c5464d9a727a54e0ff2d6, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 528e70a90fe26db42b652aa2e881f22d, type: 3}
+        NormalMapScale: 10
+        Folliage: []
+      - MinHeight: -0.5
+        BlendRange: 0.271
+        foliageSpawnDensity: 0
+        weight: 0.8
+        NormalMap: {fileID: 2800000, guid: 08f2b2d068657d4498be3b76c170fbb4, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 6e2360d403fa4ba4cbb044f7e651bd53, type: 3}
+        NormalMapScale: 10
+        Folliage: []
+      - MinHeight: 0.124
+        BlendRange: 0.252
+        foliageSpawnDensity: 0.06
+        weight: 0.595
+        NormalMap: {fileID: 2800000, guid: a7568caa849c5464d9a727a54e0ff2d6, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 528e70a90fe26db42b652aa2e881f22d, type: 3}
+        NormalMapScale: 10
+        Folliage:
+        - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
+          minHeight: 2
+          maxHeight: 5
+          minWidth: 2
+          maxWidth: 4
+          spawnChance: 1
+        - obj: {fileID: 7011471998195131789, guid: 651f859c81062834d9ab48ef8de26f64, type: 3}
+          minHeight: 2
+          maxHeight: 5
+          minWidth: 2
+          maxWidth: 4
+          spawnChance: 2
     - tempreture: 100
       humidity: 30
       heightMult: 1.3
@@ -1037,71 +1381,100 @@ MonoBehaviour:
         m_ColorSpace: -1
         m_NumColorKeys: 2
         m_NumAlphaKeys: 2
-      foliageSpawnDensity: 0.508
-      NormalMap: {fileID: 2800000, guid: dc1193eea4657f542ae593df470c15d3, type: 3}
-      NormalMapScale: 1
-      Folliage:
-      - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
-        minHeight: 1
-        maxHeight: 5
-        minWidth: 1
-        maxWidth: 5
-        spawnChance: 1
+      seaFloorColour:
+        serializedVersion: 2
+        key0: {r: 0.3735848, g: 0.2784264, b: 0.2784264, a: 1}
+        key1: {r: 0.509434, g: 0.509434, b: 0.509434, a: 1}
+        key2: {r: 0, g: 0, b: 0, a: 0}
+        key3: {r: 0, g: 0, b: 0, a: 0}
+        key4: {r: 0, g: 0, b: 0, a: 0}
+        key5: {r: 0, g: 0, b: 0, a: 0}
+        key6: {r: 0, g: 0, b: 0, a: 0}
+        key7: {r: 0, g: 0, b: 0, a: 0}
+        ctime0: 0
+        ctime1: 65535
+        ctime2: 0
+        ctime3: 0
+        ctime4: 0
+        ctime5: 0
+        ctime6: 0
+        ctime7: 0
+        atime0: 0
+        atime1: 65535
+        atime2: 0
+        atime3: 0
+        atime4: 0
+        atime5: 0
+        atime6: 0
+        atime7: 0
+        m_Mode: 0
+        m_ColorSpace: -1
+        m_NumColorKeys: 2
+        m_NumAlphaKeys: 2
+      heightLayers:
+      - MinHeight: -1
+        BlendRange: 0.216
+        foliageSpawnDensity: 0.167
+        weight: 0.3
+        NormalMap: {fileID: 2800000, guid: dc1193eea4657f542ae593df470c15d3, type: 3}
+        DiffuseTexture: {fileID: 2800000, guid: 160b216a95e2324409c078b6c1ba7265, type: 3}
+        NormalMapScale: 100
+        Folliage:
+        - obj: {fileID: 6953186971687698315, guid: fed9f19739ee0444b9a2bea38f087ea8, type: 3}
+          minHeight: 1
+          maxHeight: 5
+          minWidth: 1
+          maxWidth: 4
+          spawnChance: 1
     maps:
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 1000
+      scale: 2000
       maxHeight: 300
       gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 600
+      scale: 1000
       maxHeight: 200
       gradientDampening: 1
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 100
+      scale: 200
       maxHeight: 40
       gradientDampening: 5
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 30
+      scale: 50
       maxHeight: 15
       gradientDampening: 10
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 15
+      scale: 30
       maxHeight: 3
       gradientDampening: 12.4
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 8
+      scale: 15
       maxHeight: 1
       gradientDampening: 7.6
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 1
-      maxHeight: 0.1
-      gradientDampening: 15.9
     TempretureMap:
       position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 100
+      scale: 3421
       maxHeight: 100
       gradientDampening: 0
     HumidityMap:
       position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 110
+      scale: 2315
       maxHeight: 100
       gradientDampening: 0
     Depth: 0

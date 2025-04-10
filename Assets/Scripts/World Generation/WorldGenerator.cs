@@ -3,6 +3,7 @@ using UnityEngine;
 using System.Collections;
 using static WorldGenerator;
 using Unity.VisualScripting;
+using System.Linq;
 public class WorldGenerator : MonoBehaviour
 {
     [Header("Chunk Settings")]
@@ -92,17 +93,13 @@ public class WorldGenerator : MonoBehaviour
             tempreture = copyFrom.tempreture;
             humidity = copyFrom.humidity;
             heightColour = copyFrom.heightColour;
+            seaFloorColour = copyFrom.seaFloorColour;
             seaColour = copyFrom.seaColour;
             heightMult = copyFrom.heightMult;
-            foliageSpawnDensity = copyFrom.foliageSpawnDensity;
-            NormalMap = copyFrom.NormalMap;
-            NormalMapScale = copyFrom.NormalMapScale;
-            foreach (worldObjects GO in copyFrom.Folliage)
+            
+            foreach (HeightLayer GO in copyFrom.heightLayers)
             {
-                for(int i = 0; i < GO.spawnChance; i++)
-                {
-                    Folliage.Add(GO);
-                }
+                heightLayers.Add(new HeightLayer(GO));
             }
         }
         public float tempreture;
@@ -110,12 +107,42 @@ public class WorldGenerator : MonoBehaviour
         public float heightMult;
         public Gradient heightColour;
         public Gradient seaColour;
-        [Range(0f,1f)]
+        public Gradient seaFloorColour;
+        public List<HeightLayer> heightLayers = new List<HeightLayer>();
+    }
+    [System.Serializable]
+    public class HeightLayer
+    {
+        public HeightLayer(HeightLayer copyFrom)
+        {
+            
+            NormalMap = copyFrom.NormalMap;
+            NormalMapScale = copyFrom.NormalMapScale;
+            DiffuseTexture = copyFrom.DiffuseTexture;
+            foliageSpawnDensity = copyFrom.foliageSpawnDensity;
+            weight = copyFrom.weight;
+            MinHeight = copyFrom.MinHeight;
+            BlendRange = copyFrom.BlendRange;
+            foreach (worldObjects GO in copyFrom.Folliage)
+            {
+                for (int i = 0; i < GO.spawnChance; i++)
+                {
+                    Folliage.Add(GO);
+                }
+            }
+        }
+        [Range(-1f, 1f)]
+        public float MinHeight;
+        [Range(0, 2f)]
+        public float BlendRange;
+        [Range(0f, 1f)]
         public float foliageSpawnDensity;
+        [Range(0f, 1f)]
+        public float weight;
         public Texture2D NormalMap;
+        public Texture2D DiffuseTexture;
         public float NormalMapScale;
         public List<worldObjects> Folliage = new List<worldObjects>();
-        
     }
 
         [System.Serializable]
@@ -454,18 +481,25 @@ public class WorldGenerator : MonoBehaviour
         bool[,] water = new bool[(chunkSize), (chunkSize)];
         Texture2D SurfaceTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
         Texture2D WaterTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
-        Texture2D NormalMap = new Texture2D((chunkSize + 1)* normalMapRes, (chunkSize + 1)* normalMapRes, TextureFormat.RGBA32, false, true);
-  
-        NormalMap.Apply(true);
-        NormalMap.name = "GeneratedNormalMap";
-        NormalMap.anisoLevel = 4;
-        NormalMap.wrapMode = TextureWrapMode.Repeat;
-        NormalMap.filterMode = FilterMode.Bilinear;
-        NormalMap.Apply();
+
+        List<TerrainLayer> biomeLayer = new List<TerrainLayer>();
+        List<int> biomesUsed = new List<int>();
+        List<float[,]> SplatMap = new List<float[,]>();
+
+        int biomeCount = workLayer.ML.biomes.Count;
+
+        float[,] baseSplat = new float[chunkSize + 1, chunkSize + 1];
+        TerrainLayer firstLayer = new TerrainLayer();
+        firstLayer.smoothness = 0;
+        firstLayer.metallic = 0;
+        firstLayer.smoothnessSource = 0;
+        firstLayer.tileSize = new Vector2(chunkSize + 1, chunkSize + 1);
+        
+
         chunk.depth = workLayer.ML.Depth;
         float currBaseAmp = baseWorldMap.maxHeight / chunk.depth;
 
-        Random.InitState(Mathf.RoundToInt(seed * chunk.transform.position.x+chunk.transform.position.y* chunk.transform.position.x + seed));
+        Random.InitState(Mathf.RoundToInt(seed * chunk.transform.position.x+chunk.transform.position.y* chunk.transform.position.y + seed));
 
         for (int x = 0; x < (chunkSize + 1); x++)
         {
@@ -474,43 +508,76 @@ public class WorldGenerator : MonoBehaviour
                 int biomeIndex = Mathf.RoundToInt(biomeData[y * (chunkSize + 1) + x].x);
                 float biomeHeightMult = biomeData[y * (chunkSize + 1) + x].y;
                 Biome bio = workLayer.ML.biomes[biomeIndex];
+
+                
+
                 float currBaseHeight = (baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.maxHeight) * currBaseAmp;
                 float landHeight = (heightData[y * (chunkSize + 1) + x] * biomeHeightMult);
                 float h = currBaseHeight + landHeight;
-                Vector2Int NormalMapSamplePoint = new Vector2Int(Mathf.FloorToInt(Mathf.Repeat(y + chunk.transform.position.x, bio.NormalMap.width- normalMapRes)), Mathf.FloorToInt(Mathf.Repeat(x + chunk.transform.position.y, bio.NormalMap.height - normalMapRes)));
-                
-                NormalMap.SetPixels((y* normalMapRes), (x * normalMapRes),normalMapRes,normalMapRes, bio.NormalMap.GetPixels(Mathf.FloorToInt((NormalMapSamplePoint.x)*bio.NormalMapScale), Mathf.FloorToInt((NormalMapSamplePoint.y) * bio.NormalMapScale),normalMapRes,normalMapRes));
-
+       
                 float currWaterLevel = baseWorldSeaLevel;
                 if (currBaseHeight > (baseWorldSeaLevel * (1 - riverAndLakeDensity)))
                 {
                     currWaterLevel = Mathf.Clamp(baseWorldSeaLevel+((currBaseHeight-(baseWorldSeaLevel * (1 - riverAndLakeDensity)))*riverAndLakeDensity), baseWorldSeaLevel, 1);
                 }
+
+                float colourHeight = h;
+
+                HeightLayer hl = null;
+                HeightLayer hl2 = null;
+                float BlendMult = 0f;
                 if (h < currWaterLevel)
                 {
-                    float waterDepth = landHeight / (currWaterLevel-currBaseHeight);
-                    heights[x, y] = currBaseHeight + (landHeight * (waterDepth));
-                    float waterHeight = Mathf.Clamp(currWaterLevel - (landHeight * (1 - waterDepth) * 0.1f)-0.003f,baseWorldSeaLevel- (landHeight * (waterDepth)*0.1f) - 0.003f, 1);
+                    float WaterDepth = h / (currWaterLevel);
+                    colourHeight = WaterDepth - 1;
+                    for (int i = bio.heightLayers.Count - 1; i >= 0; i--)
+                    {
+                        if (colourHeight > bio.heightLayers[i].MinHeight)
+                        {
+                            if (i < bio.heightLayers.Count - 1 && colourHeight > (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange))
+                            {
+                                hl2 = bio.heightLayers[i + 1];
+                                BlendMult = (colourHeight - (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange)) / (bio.heightLayers[i + 1].MinHeight - (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange));
+                            }
+                            hl = bio.heightLayers[i]; break;
+                        }
+                    }
+
+                    heights[x, y] = currBaseHeight + (landHeight * (WaterDepth));
+                    float waterHeight = Mathf.Clamp(currWaterLevel - (landHeight * (1 - WaterDepth) * 0.1f)-0.003f,baseWorldSeaLevel- (landHeight * (WaterDepth) *0.1f) - 0.0003f, 1);
                     WaterHeights[x, y] = waterHeight-0.001f;
                     
                     if (x < chunkSize && y < chunkSize)
                         water[x, y] = true;
-                    WaterTexture.SetPixel(y, x, bio.seaColour.Evaluate(waterDepth) * new Color(1f, 1f, 1f, 0.01f));
-                    SurfaceTexture.SetPixel(y, x, (bio.seaColour.Evaluate(waterDepth) + (bio.heightColour.Evaluate(0)*3)) / 4);
+                    WaterTexture.SetPixel(y, x, bio.seaColour.Evaluate(WaterDepth) * new Color(1f, 1f, 1f, 0.01f));
+                    SurfaceTexture.SetPixel(y, x, (bio.seaFloorColour.Evaluate(WaterDepth)));
                 }
                 else
                 {
+                    colourHeight = (h - currWaterLevel) / ((currBaseAmp + ((1 - currBaseAmp) * biomeHeightMult)) - currWaterLevel);
                     heights[x, y] = h;
-                    if(FoliageDensityMap.maxHeight != 0 && bio.Folliage.Count>0)
+                    for (int i = bio.heightLayers.Count-1;i>=0;i--)
                     {
-                        if (Random.Range(0f, FoliageDensityMap.maxHeight) < FoliageDensity[y * (chunkSize + 1) + x]* bio.foliageSpawnDensity*0.01f)
+                        if (colourHeight > bio.heightLayers[i].MinHeight)
                         {
-                            worldObjects obj = bio.Folliage[Random.Range(0, bio.Folliage.Count)];
+                            if (i < bio.heightLayers.Count - 1 && colourHeight> (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange))
+                            {
+                                hl2 = bio.heightLayers[i + 1];
+                                BlendMult = (colourHeight - (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange)) / (bio.heightLayers[i + 1].MinHeight - (bio.heightLayers[i + 1].MinHeight - bio.heightLayers[i + 1].BlendRange));
+                            }
+                            hl = bio.heightLayers[i]; break;
+                        }
+                    }
+                    if (FoliageDensityMap.maxHeight != 0 && hl.Folliage.Count>0)
+                    {
+                        if (Random.Range(0f, FoliageDensityMap.maxHeight) < FoliageDensity[y * (chunkSize + 1) + x] * hl.foliageSpawnDensity*0.001f)
+                        {
+                            worldObjects obj = hl.Folliage[Random.Range(0, hl.Folliage.Count)];
                             GameObject spawnObj = obj.obj;
                             float widthMult = Random.Range(obj.minWidth, obj.maxWidth);
                             float heightMult = Random.Range(obj.minHeight, obj.maxHeight);
                             Quaternion rotation = Quaternion.Euler(0, Random.Range(0f,360f), 0);
-                            Vector3 pos = new Vector3(chunk.transform.position.x+y,chunk.depth*h+ ((spawnObj.transform.localScale.y * heightMult) /2), chunk.transform.position.z+x);
+                            Vector3 pos = new Vector3(chunk.transform.position.x+y,h<1?chunk.depth*h+ ((spawnObj.transform.localScale.y * heightMult) /2): chunk.depth + ((spawnObj.transform.localScale.y * heightMult) / 2), chunk.transform.position.z+x);
                             GameObject newObj = Instantiate(spawnObj, pos, rotation, chunk.transform);
                             newObj.transform.localScale = new Vector3(spawnObj.transform.localScale.x * widthMult, spawnObj.transform.localScale.y * heightMult, spawnObj.transform.localScale.z * widthMult);
                         }
@@ -518,49 +585,137 @@ public class WorldGenerator : MonoBehaviour
                     
                     if (x < chunkSize && y < chunkSize)
                         water[x, y] = false;
-                    SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate((h-currWaterLevel)/((currBaseAmp+((1-currBaseAmp) *biomeHeightMult))-currWaterLevel)));
+                    SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate(colourHeight));
                 }
-              
+
+                int layerID = Mathf.FloorToInt(hl.MinHeight*100)*100 + biomeIndex;
+
+                int layerIndex = -1;
+                if (!biomesUsed.Contains(layerID))
+                {
+                    biomesUsed.Add(layerID);
+                    float[,] sm = new float[chunkSize + 1, chunkSize + 1];
+                    TerrainLayer tl = new TerrainLayer();
+                    tl.normalMapTexture = hl.NormalMap;
+                    tl.diffuseTexture = hl.DiffuseTexture;
+                    tl.smoothness = 0;
+                    tl.metallic = 0;
+                    tl.tileSize = new Vector2(hl.NormalMapScale, hl.NormalMapScale);
+                    tl.smoothnessSource = 0;
+                    biomeLayer.Add(tl);
+                    SplatMap.Add(sm);
+                    layerIndex = biomeLayer.Count - 1;
+                }
+                else
+                {
+                    layerIndex = biomesUsed.IndexOf(layerID);
+                }
+                if (BlendMult != 0)
+                {
+                    int layerID2 = Mathf.FloorToInt(hl.MinHeight * 100) * 100 + biomeIndex;
+
+                    int layerIndex2 = -1;
+                    if (!biomesUsed.Contains(layerID2))
+                    {
+                        biomesUsed.Add(layerID2);
+                        float[,] sm = new float[chunkSize + 1, chunkSize + 1];
+                        TerrainLayer tl = new TerrainLayer();
+                        tl.normalMapTexture = hl.NormalMap;
+                        tl.diffuseTexture = hl.DiffuseTexture;
+                        tl.smoothness = 0;
+                        tl.metallic = 0;
+                        tl.tileSize = new Vector2(hl.NormalMapScale, hl.NormalMapScale);
+                        tl.smoothnessSource = 0;
+                        biomeLayer.Add(tl);
+                        SplatMap.Add(sm);
+                        layerIndex2 = biomeLayer.Count - 1;
+                    }
+                    else
+                    {
+                        layerIndex2 = biomesUsed.IndexOf(layerID2);
+                    }
+                    SplatMap[layerIndex][x, y] = hl.weight*(1-BlendMult);
+                    SplatMap[layerIndex2][x, y] = hl.weight * BlendMult;
+                    baseSplat[x, y] = 1 - ((hl.weight * (1 - BlendMult))+ (hl.weight * BlendMult));
+                }
+                else
+                {
+                    SplatMap[layerIndex][x, y] = hl.weight;
+                    baseSplat[x, y] = 1 - hl.weight;
+                }
+               
 
             }
         }
-        
-        NormalMap.Apply();
+
         SurfaceTexture.Apply();
+        firstLayer.diffuseTexture = SurfaceTexture;
         WaterTexture.Apply();
-        chunk.drawMap(heights,SurfaceTexture,WaterHeights,water,WaterTexture, NormalMap);
+        SplatMap.Add(baseSplat);
+        biomeLayer.Add(firstLayer);
+        chunk.drawMap(heights,SurfaceTexture,WaterHeights,water,WaterTexture, biomeLayer.ToArray(), ConvertListTo3DArray(SplatMap));
     }
 
-    //cave generation not yet finished
-   // public void setChunkArrays(float[] heightData, float[] caveValues, workingLayer workLayer, Chunk chunk)
-   // {
-   //     float[,] heights = new float[(chunkSize + 1), (chunkSize + 1)];
-   //     float[,] heights2 = new float[(chunkSize + 1), (chunkSize + 1)];
-   //     bool[,] caves = new bool[(chunkSize), (chunkSize)];
-   //     Texture2D SurfaceTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
-   //     for (int x = 0; x < (chunkSize + 1); x++)
-   //     {
-   //         for (int y = 0; y < (chunkSize + 1); y++)
-   //         {
-   //             Biome bio = workLayer.ML.biomes[0];
-   //             heights[x, y] = heightData[y * (chunkSize + 1) + x];
-   //             heights2[x,y] = heightData[y * (chunkSize + 1) + x]+(0.1f* caveValues[y * (chunkSize + 1) + x]);
-   //             if (x < chunkSize && y < chunkSize)
-   //                 caves[x, y] = caveValues[y * (chunkSize + 1) + x] > 0 ? true : false;
-   //             SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate(caveValues[y * (chunkSize + 1) + +x] + 0.5f));
-   //         }
-   //     }
-   //     SurfaceTexture.Apply();
-   //
-   //     chunk.drawMap(heights, SurfaceTexture,heights2,caves, SurfaceTexture);
-   // }
+    float[,,] ConvertListTo3DArray(List<float[,]> list)
+    {
+        int width = list[0].GetLength(0);
+        int height = list[0].GetLength(1);
+        int depth = list.Count;
+
+        float[,,] array = new float[width, height, depth];
+
+        for (int z = 0; z < depth; z++)
+        {
+            float[,] layer = list[z];
+
+            if (layer.GetLength(0) != width || layer.GetLength(1) != height)
+            {
+                Debug.LogError("All layers must be the same size.");
+                continue;
+            }
+
+            for (int y = 0; y < height; y++)
+            {
+                for (int x = 0; x < width; x++)
+                {
+                    array[x, y, z] = layer[x, y];
+                }
+            }
+        }
+
+        return array;
+    }
+
+//cave generation not yet finished
+// public void setChunkArrays(float[] heightData, float[] caveValues, workingLayer workLayer, Chunk chunk)
+// {
+//     float[,] heights = new float[(chunkSize + 1), (chunkSize + 1)];
+//     float[,] heights2 = new float[(chunkSize + 1), (chunkSize + 1)];
+//     bool[,] caves = new bool[(chunkSize), (chunkSize)];
+//     Texture2D SurfaceTexture = new Texture2D(chunkSize + 1, chunkSize + 1);
+//     for (int x = 0; x < (chunkSize + 1); x++)
+//     {
+//         for (int y = 0; y < (chunkSize + 1); y++)
+//         {
+//             Biome bio = workLayer.ML.biomes[0];
+//             heights[x, y] = heightData[y * (chunkSize + 1) + x];
+//             heights2[x,y] = heightData[y * (chunkSize + 1) + x]+(0.1f* caveValues[y * (chunkSize + 1) + x]);
+//             if (x < chunkSize && y < chunkSize)
+//                 caves[x, y] = caveValues[y * (chunkSize + 1) + x] > 0 ? true : false;
+//             SurfaceTexture.SetPixel(y, x, bio.heightColour.Evaluate(caveValues[y * (chunkSize + 1) + +x] + 0.5f));
+//         }
+//     }
+//     SurfaceTexture.Apply();
+//
+//     chunk.drawMap(heights, SurfaceTexture,heights2,caves, SurfaceTexture);
+// }
 
 
 
-    //------------------------------------------------------------------------------------------------------------------------------------------------------
-    // Place Chunks
+//------------------------------------------------------------------------------------------------------------------------------------------------------
+// Place Chunks
 
-    IEnumerator loadChunks()
+IEnumerator loadChunks()
     {
         Vector3 centerChunkPos = new Vector3(Mathf.RoundToInt(LastLoadPoint.x / chunkSize) * chunkSize,
                                      0, Mathf.RoundToInt(LastLoadPoint.z / chunkSize) * chunkSize);
