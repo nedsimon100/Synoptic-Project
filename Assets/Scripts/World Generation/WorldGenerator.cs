@@ -577,7 +577,7 @@ public class WorldGenerator : MonoBehaviour
                             float widthMult = Random.Range(obj.minWidth, obj.maxWidth);
                             float heightMult = Random.Range(obj.minHeight, obj.maxHeight);
                             Quaternion rotation = Quaternion.Euler(0, Random.Range(0f,360f), 0);
-                            Vector3 pos = new Vector3(chunk.transform.position.x+y,h<1?chunk.depth*h+ ((spawnObj.transform.localScale.y * heightMult) /2): chunk.depth + ((spawnObj.transform.localScale.y * heightMult) / 2), chunk.transform.position.z+x);
+                            Vector3 pos = new Vector3(chunk.transform.position.x+y,(h<1?chunk.depth*h+ ((spawnObj.transform.localScale.y * heightMult) /2.5f): chunk.depth + ((spawnObj.transform.localScale.y * heightMult) / 2.5f)), chunk.transform.position.z+x);
                             GameObject newObj = Instantiate(spawnObj, pos, rotation, chunk.transform);
                             newObj.transform.localScale = new Vector3(spawnObj.transform.localScale.x * widthMult, spawnObj.transform.localScale.y * heightMult, spawnObj.transform.localScale.z * widthMult);
                         }
