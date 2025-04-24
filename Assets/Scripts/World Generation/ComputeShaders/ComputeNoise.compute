@@ -22,9 +22,13 @@ float workMapAmplitude;
 float workMapGradientDampening;
 float depth;
 
-float GenRandomPoint(float2 pos)
+float GenRandomPoint(float2 p)
 {
-    return frac(cos(dot(pos, float2(23.14069263277926, 2.665144142690225))) * 12345.6789);
+    float2 K1 = float2(
+        23.14069263277926, // e^pi (Gelfond's constant)
+         2.665144142690225 // 2^sqrt(2) (Gelfond–Schneider constant)
+    );
+    return frac(cos(dot(p, K1)) * 12345.6789);
 }
 float2 CubicInterpolate(float p0, float p1, float p2, float p3, float t)
 {

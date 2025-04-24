@@ -1,0 +1,311 @@
+// Kernels
+
+// Each #kernel tells which function to compile; you can have many kernels
+#pragma kernel RandomNoiseGen
+#pragma kernel FractalMapGen
+#pragma kernel ChunkGen
+
+// Create a RenderTexture with enableRandomWrite flag and set it
+// with cs.SetTexture
+
+//////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+
+
+// structs
+
+struct Map
+{
+    
+    float2 Position;
+    float2 offset;
+
+    float scale;
+    float maxHeight;
+    int heightStartIndex;
+};
+
+struct Biome
+{
+    float3 TempHumidityHeight;
+    float HeightMult;
+    
+    float sharpnessExponent;
+    float foliageDensity;
+};
+
+
+
+struct MapPoint
+{
+    int spawnPoint;
+    float height;
+    float gradient;
+    float WaterHeight;
+    int biomesCount;
+    float2 biome1;
+    float2 biome2;
+    float2 biome3;
+    float2 biome4;
+    float2 biome5; // up to 4 biomes per point
+};
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// variables
+int MapIndex;
+int MapSize;
+//maps
+RWStructuredBuffer<Map> Maps;
+// waterMapIndex = 0
+// TempMapIndex = 1
+// humidityMapIndex = 2
+// foliageMapIndex = 3
+// heightmapIndexes = 4+
+RWStructuredBuffer<float> FoliageBuffer;
+RWStructuredBuffer<float> HumidityBuffer;
+RWStructuredBuffer<float> TempBuffer;
+RWStructuredBuffer<float> WaterBuffer;
+RWStructuredBuffer<float> EvenHeightBuffer;
+RWStructuredBuffer<float> OddHeightBuffer;
+
+int biomeCount;
+float BiomeBlendDist;
+
+float Depth;
+
+float minWaterLevel;
+//biomes
+RWStructuredBuffer<Biome> biomes;
+
+// finalMap
+int ChunkSize;
+float2 ChunkPos;
+RWStructuredBuffer<MapPoint> Chunk;
+
+////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// useful functions
+
+float GenRandomPoint(float2 p)
+{
+    float2 K1 = float2(
+        23.14069263277926, // e^pi (Gelfond's constant)
+         2.665144142690225 // 2^sqrt(2) (Gelfond–Schneider constant)
+    );
+    return frac(cos(dot(p, K1)) * 12345.6789);
+}
+float2 CubicInterpolate(float p0, float p1, float p2, float p3, float t)
+{
+    float a = (p3 - p2) - (p0 - p1);
+    float b = (p0 - p1) - a;
+    float c = p2 - p0;
+    
+    return float2((a * t * t * t) + (b * t * t) + (c * t) + p1, // height
+                 (3 * a * t * t) + (2 * b * t) + c); // Gradient
+}
+
+float2 BiCubicInterpolate(float2 pos, Map BaseMap, RWStructuredBuffer<float> height)   // x is height, y is gradient
+{
+    
+    int2 basePos = int2(floor((pos - BaseMap.Position) / BaseMap.scale));
+    float2 percentAcross = frac((pos - BaseMap.Position) / BaseMap.scale);
+    
+
+    float2 Heights[4];
+    for (int i = -1; i <= 2; i++)
+    {
+        int baseIndex = (basePos.y + i) * MapSize + basePos.x;
+        Heights[i + 1] = CubicInterpolate(
+            height[baseIndex - 1],
+            height[baseIndex],
+            height[baseIndex + 1],
+            height[baseIndex + 2],
+            percentAcross.x);
+    }
+    float2 finalHeightAndYGradient = CubicInterpolate(Heights[0].x, Heights[1].x, Heights[2].x, Heights[3].x, percentAcross.y);
+    
+    float finalXGradient = CubicInterpolate(Heights[0].y, Heights[1].y, Heights[2].y, Heights[3].y, percentAcross.y).x;
+    
+    float2 gradient = float2(finalXGradient, finalHeightAndYGradient.y) * Depth / (BaseMap.scale);
+    float slope = length(gradient);
+    float slopeRatio = saturate(slope/3);
+    
+    return float2(finalHeightAndYGradient.x, slopeRatio);
+}
+
+///////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////////
+
+// Kernels
+[numthreads(16, 16, 1)]
+void RandomNoiseGen(uint3 id : SV_DispatchThreadID)
+{
+    
+    Map currMap = Maps[MapIndex];
+    
+    
+    if (id.x < MapSize && id.y < MapSize)
+    {
+        float2 pos = currMap.Position + (id.xy * currMap.scale);
+    
+        float height = GenRandomPoint(pos + currMap.offset) * currMap.maxHeight;
+        switch (MapIndex)
+        {
+            case 0:
+                WaterBuffer[id.y * MapSize + id.x] = height;
+                break;
+            case 1:
+                TempBuffer[id.y * MapSize + id.x] = height;
+                break;
+            case 2:
+                HumidityBuffer[id.y * MapSize + id.x] = height;
+                break;
+            case 3:
+                FoliageBuffer[id.y * MapSize + id.x] = height;
+                break;
+            case 4:
+                EvenHeightBuffer[id.y * MapSize + id.x] = height;
+                break;
+        }
+        
+    }
+}
+
+
+[numthreads(16, 16, 1)]
+void FractalMapGen(uint3 id : SV_DispatchThreadID)
+{
+    Map currMap = Maps[MapIndex];
+    
+    if (id.x < MapSize && id.y < MapSize)
+    {
+        RWStructuredBuffer<float> readmap = fmod(MapIndex, 2) == 0 ? EvenHeightBuffer : OddHeightBuffer;
+        float2 pos = currMap.Position + (id.xy * currMap.scale);
+        
+        float2 ans = BiCubicInterpolate(pos,Maps[MapIndex-1],readmap);
+        
+        float height = ans.x;
+
+        float h = GenRandomPoint(pos + currMap.offset) * currMap.maxHeight;
+        if (fmod(MapIndex, 2) == 0)
+        {
+            OddHeightBuffer[id.y * MapSize + id.x] = height + h;
+        }
+        else
+        {
+            EvenHeightBuffer[id.y * MapSize + id.x] = height + h;
+        }
+        
+    }
+    
+}
+
+
+
+[numthreads(16,16,1)]
+void ChunkGen(uint3 id : SV_DispatchThreadID)
+{
+    if (id.x < ChunkSize+1 && id.y < ChunkSize+1)
+    {
+        RWStructuredBuffer<float> readmap = fmod(MapIndex, 2) == 0 ? EvenHeightBuffer: OddHeightBuffer;
+        MapPoint currChunkPoint = Chunk[id.y * (ChunkSize + 1) + id.x];
+        
+        float2 pos = ChunkPos + id.yx;
+        float2 landHeight = BiCubicInterpolate(pos, Maps[MapIndex-1],readmap);
+        float waterHeight = clamp(abs(Maps[0].maxHeight - BiCubicInterpolate(pos, Maps[0],WaterBuffer).x - (Maps[0].maxHeight / 2)), minWaterLevel, Depth);
+       
+        float3 TempHumiHeight = float3(BiCubicInterpolate(pos, Maps[1],TempBuffer).x,BiCubicInterpolate(pos, Maps[2],HumidityBuffer).x,(landHeight.x - waterHeight)/Depth);
+        
+        currChunkPoint.biomesCount = 0;
+        currChunkPoint.biome1 = float2(0, 0);
+        currChunkPoint.biome2 = float2(0, 0);
+        currChunkPoint.biome3 = float2(0, 0);
+        currChunkPoint.biome4 = float2(0, 0);
+        currChunkPoint.biome5 = float2(0, 0);
+        
+   
+
+        
+        float minDist = 1e9;
+        int closestBiome = 0;
+        for (int i = 0; i < biomeCount; i++)
+        {
+            float dist = length(TempHumiHeight - biomes[i].TempHumidityHeight);
+            if (dist < minDist)
+            {
+                minDist = dist;
+                closestBiome = i;
+            }
+        }
+        currChunkPoint.biome1 = float2(closestBiome, 1);
+        currChunkPoint.biomesCount += 1;
+        float totalWeight = 1.0;
+        float HeightMult = biomes[closestBiome].HeightMult;
+        float Sharpness = biomes[closestBiome].sharpnessExponent;
+        float Foliage = biomes[closestBiome].foliageDensity;
+        for (int j = 0; j < biomeCount; j++)
+        {
+            float dist = length(TempHumiHeight - biomes[j].TempHumidityHeight);
+            float blendWeight = saturate((BiomeBlendDist - (dist - minDist)) / BiomeBlendDist);
+
+            if (blendWeight > 0 && j!=closestBiome)
+            {
+                switch (currChunkPoint.biomesCount)
+                {
+                    case 1:
+                        currChunkPoint.biome2 = float2(j, blendWeight);
+                        currChunkPoint.biomesCount += 1;
+                        break;
+                    case 2:
+                        currChunkPoint.biome3 = float2(j, blendWeight);
+                        currChunkPoint.biomesCount += 1;
+                        break;
+                    case 3:
+                        currChunkPoint.biome4 = float2(j, blendWeight);
+                        currChunkPoint.biomesCount += 1;
+                        break;
+                    case 4:
+                        currChunkPoint.biome5 = float2(j, blendWeight);
+                        currChunkPoint.biomesCount += 1;
+                        break;
+                    
+                }
+                
+                HeightMult += biomes[j].HeightMult * blendWeight;
+                Sharpness += biomes[j].sharpnessExponent * blendWeight;
+                Foliage += biomes[j].foliageDensity * blendWeight;
+                totalWeight += blendWeight;
+            }
+        }
+        
+        if (totalWeight > 0.0)
+        {
+            HeightMult /= totalWeight;
+            Sharpness /= totalWeight;
+            Foliage /= totalWeight;
+        }
+        
+        if (1 - (BiCubicInterpolate(pos, Maps[3],FoliageBuffer).x * GenRandomPoint(pos)) < Foliage)
+        {
+            currChunkPoint.spawnPoint = 1;
+        }
+        else
+        {
+            currChunkPoint.spawnPoint = 0;
+        }
+        
+        currChunkPoint.height = landHeight.x * HeightMult * saturate(pow(1 - (landHeight.y), Sharpness));
+        
+        currChunkPoint.gradient = saturate(pow(1 - (landHeight.y / Depth), Sharpness));
+        
+        currChunkPoint.WaterHeight = waterHeight;
+        
+        currChunkPoint.biome1.y /= totalWeight;
+        currChunkPoint.biome2.y /= totalWeight;
+        currChunkPoint.biome3.y /= totalWeight;
+        currChunkPoint.biome4.y /= totalWeight;
+        currChunkPoint.biome5.y /= totalWeight;
+        
+        Chunk[id.y * (ChunkSize + 1) + id.x] = currChunkPoint;
+
+    }
+}

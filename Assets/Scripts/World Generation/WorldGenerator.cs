@@ -42,11 +42,7 @@ public class WorldGenerator : MonoBehaviour
     public int mapsize;
     [Range(1, 10)]
     public int maxLayersSaved;
-    public List<MapLayer> layers = new List<MapLayer>();
-
-    public int normalMapRes = 100;
-
-    //public GameObject debugMap;
+    public MapLayer layers;
     [System.Serializable]
     public class worldObjects
     {
@@ -195,7 +191,6 @@ public class WorldGenerator : MonoBehaviour
     private void Start()
     {
         
-        mapItterations = new int[layers[0].maps.Count];
         if (seed == 0)
         {
             seed = Random.Range(0, 10000);
@@ -225,18 +220,10 @@ public class WorldGenerator : MonoBehaviour
     [System.Serializable]
     public class workingLayer
     {
-        public workingLayer(int currLayer, List<MapLayer> mls,Map BaseMap)
+        public workingLayer(int currLayer, MapLayer mls,Map BaseMap)
         {
             layer = currLayer;
-            ML = mls[0];
-            for (int i = mls.Count - 1; i >= 0; i--)
-            {
-                if (currLayer >= mls[i].minLayer)
-                {
-                    ML = new MapLayer(mls[i], BaseMap);
-                    break;
-                }
-            }
+            ML = mls;
 
         }
         public int layer;
