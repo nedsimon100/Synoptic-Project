@@ -9,7 +9,7 @@ GameObject:
   serializedVersion: 6
   m_Component:
   - component: {fileID: 556630663358225243}
-  - component: {fileID: 3564023043158381708}
+  - component: {fileID: 8930537038557788392}
   m_Layer: 0
   m_Name: Chunk
   m_TagString: Untagged
@@ -34,7 +34,7 @@ Transform:
   - {fileID: 6701363568013440360}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
---- !u!114 &3564023043158381708
+--- !u!114 &8930537038557788392
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -55,6 +55,7 @@ MonoBehaviour:
   layer: 0
   usedMaps: []
   terrainMaterial: {fileID: 2100000, guid: b7b43830d438fae49b625b42a75581de, type: 2}
+  TLLength: 0
 --- !u!1 &1779280765726266734
 GameObject:
   m_ObjectHideFlags: 0
