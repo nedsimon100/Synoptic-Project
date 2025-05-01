@@ -444,9 +444,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxChunksPerFrame: 1
-  chunkSize: 246
-  LoadDist: 5
-  deletionDist: 8
+  chunkSize: 124
+  LoadDist: 8
+  deletionDist: 15
   Player: {fileID: 196427280}
   seed: 0
   ChunkPrefab: {fileID: 1432234054492279794, guid: 972854f64563414459e6597732dc2adc, type: 3}
@@ -465,14 +465,14 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     offset: {x: 0, y: 0, z: 0}
     heightData: []
-    scale: 4261
-    maxHeight: 1000
+    scale: 386
+    maxHeight: 497
     gradientDampening: 0
-  baseWorldSeaLevel: 0.313
-  riverAndLakeDensity: 0.797
+  baseWorldSeaLevel: 0.382
+  riverAndLakeDensity: 0.571
   compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
   threadCountAndMapMult: 16
-  mapsize: 100
+  mapsize: 20
   sharpness: 10
   LandSettings:
     biomes:
@@ -716,9 +716,21 @@ MonoBehaviour:
         Folliage:
         - obj: {fileID: 7011471998195131789, guid: 651f859c81062834d9ab48ef8de26f64, type: 3}
           minHeight: 1
-          maxHeight: 1
+          maxHeight: 3
           minWidth: 1
-          maxWidth: 1
+          maxWidth: 2
+          spawnChance: 2
+        - obj: {fileID: 919132149155446097, guid: 57f5ab33dc3bc9a45b2b5e3348c2cb9c, type: 3}
+          minHeight: 1
+          maxHeight: 2
+          minWidth: 1
+          maxWidth: 3
+          spawnChance: 2
+        - obj: {fileID: 919132149155446097, guid: 1d7e65b3be4a6af45b9735a5ad3f46b1, type: 3}
+          minHeight: 1
+          maxHeight: 1.5
+          minWidth: 1
+          maxWidth: 1.5
           spawnChance: 2
     - tempreture: 50
       humidity: 50
@@ -824,7 +836,7 @@ MonoBehaviour:
         Folliage: []
       - MinHeight: 0.04
         BlendRange: 0.01
-        foliageSpawnDensity: 0.201
+        foliageSpawnDensity: 0.39
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: 80403080a5b91254b985e58c7ed52375, type: 3}
         DiffuseTexture: {fileID: 2800000, guid: bd4c367b7fb07e74b84c114344caa56e, type: 3}
@@ -843,6 +855,12 @@ MonoBehaviour:
           maxWidth: 2
           spawnChance: 4
         - obj: {fileID: 919132149155446097, guid: b6d0907f73a544342a5bc1abf764b6f8, type: 3}
+          minHeight: 1
+          maxHeight: 2
+          minWidth: 1
+          maxWidth: 2
+          spawnChance: 1
+        - obj: {fileID: 919132149155446097, guid: b64ee4912925ba14f86ef0fe88643d1c, type: 3}
           minHeight: 1
           maxHeight: 2
           minWidth: 1
@@ -958,19 +976,19 @@ MonoBehaviour:
         DiffuseTexture: {fileID: 2800000, guid: 528e70a90fe26db42b652aa2e881f22d, type: 3}
         TextureScale: 40
         Folliage:
-        - obj: {fileID: 919132149155446097, guid: e7c00a2269aadf6408bc370f0e422b09, type: 3}
+        - obj: {fileID: 919132149155446097, guid: 57f5ab33dc3bc9a45b2b5e3348c2cb9c, type: 3}
           minHeight: 1
           maxHeight: 2
           minWidth: 1
           maxWidth: 2
           spawnChance: 4
-        - obj: {fileID: 919132149155446097, guid: 3c7db92b93579bc4c9bbbb369e04a38b, type: 3}
+        - obj: {fileID: 919132149155446097, guid: fda173e5f249741469b9d268f1e16902, type: 3}
           minHeight: 1
           maxHeight: 2
           minWidth: 1
           maxWidth: 2
           spawnChance: 4
-        - obj: {fileID: 919132149155446097, guid: b6d0907f73a544342a5bc1abf764b6f8, type: 3}
+        - obj: {fileID: 7011471998195131789, guid: 651f859c81062834d9ab48ef8de26f64, type: 3}
           minHeight: 1
           maxHeight: 2
           minWidth: 1
@@ -1521,7 +1539,7 @@ Camera:
     width: 1
     height: 1
   near clip plane: 0.3
-  far clip plane: 1300
+  far clip plane: 2000
   field of view: 70
   orthographic: 0
   orthographic size: 10

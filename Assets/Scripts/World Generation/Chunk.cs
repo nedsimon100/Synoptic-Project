@@ -19,7 +19,7 @@ public class Chunk : MonoBehaviour
     public Vector3[] usedMaps;
 
     public Material terrainMaterial; 
-  //  public Texture2D NormalMap;
+    //public Texture2D DebugMap;
     public void drawMap(float[,] heightData, Texture2D FloorTexture, float[,] heightData2,  bool[,] holeArray, Texture2D Texture2, Texture2D normalMap)
     {
 

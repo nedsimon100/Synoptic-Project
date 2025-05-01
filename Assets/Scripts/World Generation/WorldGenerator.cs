@@ -44,7 +44,7 @@ public class WorldGenerator : MonoBehaviour
     public float sharpness;
     public MapLayer LandSettings;
 
-    //public GameObject debugMap;
+    
     [System.Serializable]
     public class worldObjects
     {
@@ -80,7 +80,7 @@ public class WorldGenerator : MonoBehaviour
             gradientDampening = copyFrom.gradientDampening;
             heightData = copyFrom.heightData;
         }
-
+        //public Texture2D debugMap;
     }
 
     [System.Serializable]
@@ -316,16 +316,12 @@ public class WorldGenerator : MonoBehaviour
         {
             chunk.usedMaps[i] = new Vector3(mapItterations[i], Worklayer.ML.maps[i].position.x, Worklayer.ML.maps[i].position.z);
         }
-        if (Layer == 0)
-        {
-            setChunkArrays(setShaderValuesK3(Worklayer.ML.maps[Worklayer.ML.maps.Count - 1], chunk), biomes(chunk, Worklayer), Worklayer, chunk);
+        
+        
+        setChunkArrays(setShaderValuesK3(Worklayer.ML.maps[Worklayer.ML.maps.Count - 1], chunk), biomes(chunk, Worklayer), Worklayer, chunk);
 
-        }
-        else
-        {
-        //    setChunkArrays(setShaderValuesK3(Worklayer.ML.maps[Worklayer.ML.maps.Count - 1], chunk), caves(chunk, Worklayer), Worklayer, chunk);
-
-        }
+        
+       
         return Worklayer;
     }
 
@@ -518,8 +514,8 @@ public class WorldGenerator : MonoBehaviour
                         }
                     }
 
-                    heights[x, y] = landHeight-(currWaterLevel - landHeight);
-                    float waterHeight = landHeight < baseWorldSeaLevel ? baseWorldSeaLevel : Mathf.Clamp(currWaterLevel - ((1-WaterDepth)*0.1f),0,landHeight) ;
+                    heights[x, y] = landHeight-((currWaterLevel - landHeight)*0.5f);
+                    float waterHeight = landHeight < baseWorldSeaLevel ? baseWorldSeaLevel : landHeight;
                     WaterHeights[x, y] = waterHeight - 0.001f;
                     
                     if (x < chunkSize && y < chunkSize)
@@ -752,7 +748,7 @@ IEnumerator loadChunks()
     public void setShaderValuesK1(Map workMap, Chunk chunk)
     {
         ComputeBuffer heightBuffer = new ComputeBuffer(mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult, sizeof(float));
-
+        
 
 
         workMap.heightData = new float[mapsize * mapsize * threadCountAndMapMult * threadCountAndMapMult];
@@ -783,7 +779,17 @@ IEnumerator loadChunks()
         compNoise.Dispatch(0, mapsize + 1, mapsize + 1, 1);
 
         heightBuffer.GetData(workMap.heightData);
-
+      //  Texture2D TM = new Texture2D(mapsize * threadCountAndMapMult, mapsize * threadCountAndMapMult);
+      //  for (int x=0; x< mapsize * threadCountAndMapMult; x++)
+      //  {
+      //      for (int y = 0; y < mapsize * threadCountAndMapMult; y++)
+      //      {
+      //          float f = workMap.heightData[y * mapsize * threadCountAndMapMult + x];
+      //          TM.SetPixel(y, x, new Color(f,f,f));
+      //      }
+      //  }
+      //  TM.Apply();
+      //  workMap.debugMap = TM;
         heightBuffer.Release();
     }
     public void setShaderValuesK2(Map lastMap, Map workMap, Chunk chunk, float depth)
@@ -828,7 +834,17 @@ IEnumerator loadChunks()
         compNoise.Dispatch(1, mapsize + 1, mapsize + 1, 1);
 
         heightBuffer.GetData(workMap.heightData);
-
+        //Texture2D TM = new Texture2D(mapsize * threadCountAndMapMult, mapsize * threadCountAndMapMult);
+        //for (int x = 0; x < mapsize * threadCountAndMapMult; x++)
+        //{
+        //    for (int y = 0; y < mapsize * threadCountAndMapMult; y++)
+        //    {
+        //        float f = workMap.heightData[y * mapsize * threadCountAndMapMult + x];
+        //        TM.SetPixel(y, x, new Color(f, f, f));
+        //    }
+        //}
+        //TM.Apply();
+        //workMap.debugMap = TM;
         lastHeightBuffer.Release();
         heightBuffer.Release();
     }
@@ -855,7 +871,17 @@ IEnumerator loadChunks()
         compNoise.Dispatch(2, dispatchSize, dispatchSize, 1);
         float[] heights = new float[(1 + chunk.chunkSize) * (1 + chunk.chunkSize)];
         currHeightBuffer.GetData(heights);
-
+        //Texture2D TM = new Texture2D((1 + chunk.chunkSize), (1 + chunk.chunkSize));
+        //for (int x = 0; x < (1 + chunk.chunkSize); x++)
+        //{
+        //    for (int y = 0; y < (1 + chunk.chunkSize); y++)
+        //    {
+        //        float f = heights[y * (1 + chunk.chunkSize) + x];
+        //        TM.SetPixel(y, x, new Color(f, f, f));
+        //    }
+        //}
+        //TM.Apply();
+        //chunk.DebugMap = TM;
         finalHeightBuffer.Release();
         currHeightBuffer.Release();
         return heights;

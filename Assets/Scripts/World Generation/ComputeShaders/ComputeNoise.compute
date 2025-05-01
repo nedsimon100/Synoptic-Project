@@ -24,7 +24,9 @@ float depth;
 
 float GenRandomPoint(float2 pos)
 {
-    return frac(cos(dot(pos, float2(23.14069263277926, 2.665144142690225))) * 12345.6789);
+    float3 p3 = frac(float3(pos.xyx) * 0.1031);
+    p3 += dot(p3, p3.yzx + 33.33);
+    return frac((p3.x + p3.y) * p3.z);
 }
 float2 CubicInterpolate(float p0, float p1, float p2, float p3, float t)
 {
