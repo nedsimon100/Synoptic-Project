@@ -444,9 +444,9 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   maxChunksPerFrame: 1
-  chunkSize: 124
-  LoadDist: 8
-  deletionDist: 15
+  chunkSize: 256
+  LoadDist: 6
+  deletionDist: 11
   Player: {fileID: 196427280}
   seed: 0
   ChunkPrefab: {fileID: 1432234054492279794, guid: 972854f64563414459e6597732dc2adc, type: 3}
@@ -454,6 +454,8 @@ MonoBehaviour:
   LastLoadPoint: {x: 0, y: 0, z: 0}
   Layer: 0
   layerOffset: 0
+  mapsize: 20
+  sharpness: 10
   FoliageDensityMap:
     position: {x: 0, y: 0, z: 0}
     offset: {x: 0, y: 0, z: 0}
@@ -461,20 +463,79 @@ MonoBehaviour:
     scale: 923
     maxHeight: 230
     gradientDampening: 0
-  baseWorldMap:
+  RiverHeightMap:
     position: {x: 0, y: 0, z: 0}
     offset: {x: 0, y: 0, z: 0}
     heightData: []
-    scale: 386
-    maxHeight: 497
+    scale: 640
+    maxHeight: 717
     gradientDampening: 0
-  baseWorldSeaLevel: 0.382
-  riverAndLakeDensity: 0.571
-  compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
-  threadCountAndMapMult: 16
-  mapsize: 20
-  sharpness: 10
+  baseWorldSeaLevel: 0.159
+  riverAndLakeDensity: 0.635
   LandSettings:
+    maps:
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 2190
+      maxHeight: 600
+      gradientDampening: 0
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 1290
+      maxHeight: 500
+      gradientDampening: 0
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 793
+      maxHeight: 300
+      gradientDampening: 0
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 482
+      maxHeight: 200
+      gradientDampening: 0
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 296
+      maxHeight: 100
+      gradientDampening: 4
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 200
+      maxHeight: 75
+      gradientDampening: 5
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 100
+      maxHeight: 60
+      gradientDampening: 15
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 50
+      maxHeight: 10
+      gradientDampening: 20
+    TempretureMap:
+      position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 4783
+      maxHeight: 113
+      gradientDampening: 0
+    HumidityMap:
+      position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 3566
+      maxHeight: 107
+      gradientDampening: 0
     biomes:
     - tempreture: 0
       humidity: 0
@@ -836,7 +897,7 @@ MonoBehaviour:
         Folliage: []
       - MinHeight: 0.04
         BlendRange: 0.01
-        foliageSpawnDensity: 0.39
+        foliageSpawnDensity: 0.557
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: 80403080a5b91254b985e58c7ed52375, type: 3}
         DiffuseTexture: {fileID: 2800000, guid: bd4c367b7fb07e74b84c114344caa56e, type: 3}
@@ -970,7 +1031,7 @@ MonoBehaviour:
         Folliage: []
       - MinHeight: 0.04
         BlendRange: 0.01
-        foliageSpawnDensity: 0.201
+        foliageSpawnDensity: 0.286
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: a7568caa849c5464d9a727a54e0ff2d6, type: 3}
         DiffuseTexture: {fileID: 2800000, guid: 528e70a90fe26db42b652aa2e881f22d, type: 3}
@@ -1130,7 +1191,7 @@ MonoBehaviour:
           spawnChance: 0
       - MinHeight: 0.05
         BlendRange: 0.01
-        foliageSpawnDensity: 0.2
+        foliageSpawnDensity: 0.522
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: e48b7f6189dc43541aa6128e69af76cf, type: 3}
         DiffuseTexture: {fileID: 2800000, guid: 29a17bcdebfa2f64fb315b6c3b4be42a, type: 3}
@@ -1156,7 +1217,7 @@ MonoBehaviour:
           spawnChance: 1
       - MinHeight: 0.4
         BlendRange: 0.2
-        foliageSpawnDensity: 0.2
+        foliageSpawnDensity: 0.61
         weight: 0.8
         NormalMap: {fileID: 2800000, guid: 80403080a5b91254b985e58c7ed52375, type: 3}
         DiffuseTexture: {fileID: 2800000, guid: bd4c367b7fb07e74b84c114344caa56e, type: 3}
@@ -1214,75 +1275,13 @@ MonoBehaviour:
         DiffuseTexture: {fileID: 2800000, guid: 160b216a95e2324409c078b6c1ba7265, type: 3}
         TextureScale: 20
         Folliage: []
-    maps:
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 2190
-      maxHeight: 600
-      gradientDampening: 0
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 1290
-      maxHeight: 500
-      gradientDampening: 0
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 793
-      maxHeight: 300
-      gradientDampening: 0
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 482
-      maxHeight: 200
-      gradientDampening: 0
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 296
-      maxHeight: 100
-      gradientDampening: 4
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 200
-      maxHeight: 75
-      gradientDampening: 5
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 100
-      maxHeight: 60
-      gradientDampening: 15
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 50
-      maxHeight: 10
-      gradientDampening: 20
-    TempretureMap:
-      position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 4783
-      maxHeight: 113
-      gradientDampening: 0
-    HumidityMap:
-      position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 3566
-      maxHeight: 107
-      gradientDampening: 0
     Depth: 0
     biomeBuffer: []
+  compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
+  threadCountAndMapMult: 16
   WL:
     layer: 0
     ML:
-      biomes: []
       maps: []
       TempretureMap:
         position: {x: 0, y: 0, z: 0}
@@ -1298,6 +1297,7 @@ MonoBehaviour:
         scale: 0
         maxHeight: 0
         gradientDampening: 0
+      biomes: []
       Depth: 0
       biomeBuffer: []
 --- !u!1 &1407238112

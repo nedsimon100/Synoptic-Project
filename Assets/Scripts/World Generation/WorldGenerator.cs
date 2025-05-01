@@ -24,27 +24,27 @@ public class WorldGenerator : MonoBehaviour
     public int Layer;
     [HideInInspector]
     public float layerOffset;
+    [Header("Map Settings")]
+    [Range(4, 1000)]
+    public int mapsize;
+    [Range(0f, 10f)]
+    public float sharpness;
     public Map FoliageDensityMap;
-    public Map baseWorldMap;
+    public Map RiverHeightMap;
     [Range(0f, 1f)]
     public float baseWorldSeaLevel;
     [Range(0f, 1f)]
     public float riverAndLakeDensity;
+
+    private int[] mapItterations;
+
+    public MapLayer LandSettings;
     [Header("Compute Shader")]
 
     public ComputeShader compNoise;
     [HideInInspector]
     public int threadCountAndMapMult = 16;
-    private int[] mapItterations;
 
-    [Header("Layer Settings")]
-    [Range(4, 1000)]
-    public int mapsize;
-    [Range(0f, 10f)]
-    public float sharpness;
-    public MapLayer LandSettings;
-
-    
     [System.Serializable]
     public class worldObjects
     {
@@ -176,10 +176,12 @@ public class WorldGenerator : MonoBehaviour
                 i++;
             }
         }
-        public List<Biome> biomes;
         public List<Map> maps;
         public Map TempretureMap;
         public Map HumidityMap;
+        public List<Biome> biomes;
+
+
 
         [HideInInspector]
         public float Depth;
@@ -197,7 +199,7 @@ public class WorldGenerator : MonoBehaviour
             seed = Random.Range(0, 10000);
         }
         Random.InitState(seed);
-        baseWorldMap.offset = new Vector3(Random.Range(0, 99999), Random.Range(0, 99999));
+        RiverHeightMap.offset = new Vector3(Random.Range(0, 99999), Random.Range(0, 99999));
         FoliageDensityMap.offset = new Vector3(Random.Range(0, 99999), Random.Range(0, 99999));
         LastLoadPoint = Player.transform.position;
         LastLoadPoint.y = 0;
@@ -240,7 +242,7 @@ public class WorldGenerator : MonoBehaviour
         workingLayer worklayer;
         if (firstGen)
         {
-            worklayer = generateOffsets(new workingLayer(chunk.layer, LandSettings, baseWorldMap));
+            worklayer = generateOffsets(new workingLayer(chunk.layer, LandSettings, RiverHeightMap));
             WL = worklayer;
             firstGen = false;
         }
@@ -290,9 +292,9 @@ public class WorldGenerator : MonoBehaviour
 
     public workingLayer outputMaps(Chunk chunk, workingLayer Worklayer, int startMap)
     {
-        if (!checkMapRange(chunk, baseWorldMap))
+        if (!checkMapRange(chunk, RiverHeightMap))
         {
-            setShaderValuesK1(baseWorldMap, chunk);
+            setShaderValuesK1(RiverHeightMap, chunk);
         }
         if (!checkMapRange(chunk, FoliageDensityMap))
         {
@@ -444,7 +446,7 @@ public class WorldGenerator : MonoBehaviour
 
     public void setChunkArrays(float[] heightData, Vector2[] biomeData, workingLayer workLayer, Chunk chunk)
     {
-        float[] baseWorldHeight = setShaderValuesK3(baseWorldMap, chunk);
+        float[] baseWorldHeight = setShaderValuesK3(RiverHeightMap, chunk);
         float[] FoliageDensity = setShaderValuesK3(FoliageDensityMap, chunk);
         float[,] heights = new float[(chunkSize+1), (chunkSize+1)];
         float[,] WaterHeights = new float[(chunkSize+1), (chunkSize+1)];
@@ -467,7 +469,7 @@ public class WorldGenerator : MonoBehaviour
         
 
         chunk.depth = workLayer.ML.Depth;
-        float currBaseAmp = baseWorldMap.maxHeight / chunk.depth;
+        float currBaseAmp = RiverHeightMap.maxHeight / chunk.depth;
 
         Random.InitState(Mathf.RoundToInt(seed * chunk.transform.position.x+chunk.transform.position.y* chunk.transform.position.y + seed));
 
@@ -481,7 +483,7 @@ public class WorldGenerator : MonoBehaviour
 
                 
 
-                float WaterHeightMap = (((1-Mathf.Abs(((baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.maxHeight)*2)-0.5f)) * riverAndLakeDensity )- (riverAndLakeDensity*0.5f) +baseWorldSeaLevel);
+                float WaterHeightMap = (((1-Mathf.Abs(((baseWorldHeight[y * (chunkSize + 1) + x] / RiverHeightMap.maxHeight)*2)-0.5f)) * riverAndLakeDensity )- (riverAndLakeDensity*0.5f) +baseWorldSeaLevel);
                 float landHeight = (heightData[y * (chunkSize + 1) + x] * biomeHeightMult);
                 
        
