@@ -40,6 +40,8 @@ public class WorldGenerator : MonoBehaviour
     [Header("Layer Settings")]
     [Range(4, 1000)]
     public int mapsize;
+    [Range(0f, 10f)]
+    public float sharpness;
     public MapLayer LandSettings;
 
     //public GameObject debugMap;
@@ -483,24 +485,24 @@ public class WorldGenerator : MonoBehaviour
 
                 
 
-                float currBaseHeight = ((baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.maxHeight)-baseWorldSeaLevel)*currBaseAmp;
+                float WaterHeightMap = (((1-Mathf.Abs(((baseWorldHeight[y * (chunkSize + 1) + x] / baseWorldMap.maxHeight)*2)-0.5f)) * riverAndLakeDensity )- (riverAndLakeDensity*0.5f) +baseWorldSeaLevel);
                 float landHeight = (heightData[y * (chunkSize + 1) + x] * biomeHeightMult);
-                float h = landHeight;
+                
        
                 float currWaterLevel = baseWorldSeaLevel;
-                if (currBaseHeight > baseWorldSeaLevel)
+                if (WaterHeightMap  > baseWorldSeaLevel)
                 {
-                    currWaterLevel = Mathf.Clamp(baseWorldSeaLevel+((currBaseHeight)*riverAndLakeDensity), baseWorldSeaLevel, 1);
+                    currWaterLevel = Mathf.Clamp((WaterHeightMap), baseWorldSeaLevel, 1);
                 }
 
-                float colourHeight = h-currWaterLevel;
+                float colourHeight = landHeight-currWaterLevel;
 
                 HeightLayer hl = null;
                 HeightLayer hl2 = null;
                 float BlendMult = 0f;
-                if (h < currWaterLevel)
+                if (landHeight < currWaterLevel)
                 {
-                    float WaterDepth = h / (currWaterLevel);
+                    float WaterDepth = landHeight / (currWaterLevel);
                     colourHeight = WaterDepth - 1;
                     for (int i = bio.heightLandSettings.Count - 1; i >= 0; i--)
                     {
@@ -517,8 +519,8 @@ public class WorldGenerator : MonoBehaviour
                     }
 
                     heights[x, y] = landHeight-(currWaterLevel - landHeight);
-                    float waterHeight = Mathf.Clamp(currWaterLevel - ((1-WaterDepth)*0.001f),landHeight-0.05f,currWaterLevel);
-                    WaterHeights[x, y] = waterHeight-0.001f;
+                    float waterHeight = landHeight < baseWorldSeaLevel ? baseWorldSeaLevel : Mathf.Clamp(currWaterLevel - ((1-WaterDepth)*0.1f),0,landHeight) ;
+                    WaterHeights[x, y] = waterHeight - 0.001f;
                     
                     if (x < chunkSize && y < chunkSize)
                         water[x, y] = true;
@@ -527,8 +529,8 @@ public class WorldGenerator : MonoBehaviour
                 }
                 else
                 {
-                    colourHeight = (h - currWaterLevel) / ((currBaseAmp + ((1 - currBaseAmp) * biomeHeightMult)) - currWaterLevel);
-                    heights[x, y] = h;
+                    colourHeight = (landHeight - currWaterLevel) / ((currBaseAmp + ((1 - currBaseAmp) * biomeHeightMult)) - currWaterLevel);
+                    heights[x, y] = landHeight;
                     for (int i = bio.heightLandSettings.Count-1;i>=0;i--)
                     {
                         if (colourHeight > bio.heightLandSettings[i].MinHeight)
@@ -558,7 +560,7 @@ public class WorldGenerator : MonoBehaviour
                         float widthMult = Random.Range(obj.minWidth, obj.maxWidth);
                         float heightMult = Random.Range(obj.minHeight, obj.maxHeight);
                         Quaternion rotation = Quaternion.Euler(0, Random.Range(0f, 360f), 0);
-                        Vector3 pos = new Vector3(chunk.transform.position.x + y, (h < 1 ? chunk.depth * h + ((spawnObj.transform.localScale.y * heightMult) / 2.5f) : chunk.depth + ((spawnObj.transform.localScale.y * heightMult) / 2.5f)), chunk.transform.position.z + x);
+                        Vector3 pos = new Vector3(chunk.transform.position.x + y, (landHeight < 1 ? chunk.depth * landHeight + ((spawnObj.transform.localScale.y * heightMult) / 2.5f) : chunk.depth + ((spawnObj.transform.localScale.y * heightMult) / 2.5f)), chunk.transform.position.z + x);
                         GameObject newObj = Instantiate(spawnObj, pos, rotation, chunk.transform);
                         newObj.transform.localScale = new Vector3(spawnObj.transform.localScale.x * widthMult, spawnObj.transform.localScale.y * heightMult, spawnObj.transform.localScale.z * widthMult);
                     }
@@ -847,7 +849,7 @@ IEnumerator loadChunks()
         compNoise.SetInt("BaseMapSize", mapsize * threadCountAndMapMult);
         compNoise.SetBuffer(2, "Result", currHeightBuffer);
         compNoise.SetBuffer(2, "heightMap", finalHeightBuffer);
-
+        compNoise.SetFloat("workMapGradientDampening", sharpness);
 
         int dispatchSize = Mathf.CeilToInt((chunk.chunkSize + 1) / threadCountAndMapMult) + 1;
         compNoise.Dispatch(2, dispatchSize, dispatchSize, 1);

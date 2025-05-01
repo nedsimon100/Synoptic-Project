@@ -465,14 +465,15 @@ MonoBehaviour:
     position: {x: 0, y: 0, z: 0}
     offset: {x: 0, y: 0, z: 0}
     heightData: []
-    scale: 5276
+    scale: 4261
     maxHeight: 1000
     gradientDampening: 0
-  baseWorldSeaLevel: 0.18
-  riverAndLakeDensity: 1
+  baseWorldSeaLevel: 0.313
+  riverAndLakeDensity: 0.797
   compNoise: {fileID: 7200000, guid: fc271bc701f0e084080bd39b26d376bb, type: 3}
   threadCountAndMapMult: 16
   mapsize: 100
+  sharpness: 10
   LandSettings:
     biomes:
     - tempreture: 0
@@ -1199,51 +1200,51 @@ MonoBehaviour:
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 5666
-      maxHeight: 1000
+      scale: 2190
+      maxHeight: 600
       gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 4187
-      maxHeight: 904
-      gradientDampening: 1.63
+      scale: 1290
+      maxHeight: 500
+      gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 3033
-      maxHeight: 812
-      gradientDampening: 1.63
+      scale: 793
+      maxHeight: 300
+      gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
-      scale: 1968
-      maxHeight: 729
-      gradientDampening: 1.63
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 785
-      maxHeight: 543
-      gradientDampening: 1
-    - position: {x: 0, y: 0, z: 0}
-      offset: {x: 0, y: 0, z: 0}
-      heightData: []
-      scale: 513
-      maxHeight: 262
-      gradientDampening: 2
+      scale: 482
+      maxHeight: 200
+      gradientDampening: 0
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 296
-      maxHeight: 129
-      gradientDampening: 3
+      maxHeight: 100
+      gradientDampening: 4
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 200
+      maxHeight: 75
+      gradientDampening: 5
     - position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
       heightData: []
       scale: 100
-      maxHeight: 67
-      gradientDampening: 4
+      maxHeight: 60
+      gradientDampening: 15
+    - position: {x: 0, y: 0, z: 0}
+      offset: {x: 0, y: 0, z: 0}
+      heightData: []
+      scale: 50
+      maxHeight: 10
+      gradientDampening: 20
     TempretureMap:
       position: {x: 0, y: 0, z: 0}
       offset: {x: 0, y: 0, z: 0}
@@ -1497,7 +1498,7 @@ Camera:
   m_GameObject: {fileID: 1844794501}
   m_Enabled: 1
   serializedVersion: 2
-  m_ClearFlags: 2
+  m_ClearFlags: 1
   m_BackGroundColor: {r: 0.19215687, g: 0.3019608, b: 0.4745098, a: 0}
   m_projectionMatrixMode: 1
   m_GateFitMode: 2

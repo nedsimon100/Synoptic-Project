@@ -36,7 +36,7 @@ float2 CubicInterpolate(float p0, float p1, float p2, float p3, float t)
                  (3 * a * t * t) + (2 * b * t) + c); // Gradient
 }
 
-float3 BiCubicInterpolate(float2 pos)   // x is height, (y,z) is gradient // bicubic interpolation needs fixing
+float2 BiCubicInterpolate(float2 pos)   // x is height, (y,z) is gradient // bicubic interpolation needs fixing
 {
     int2 basePos = int2(floor((pos - BaseMapPosition) / BaseMapScale));
     float2 percentAcross = frac((pos - BaseMapPosition) / BaseMapScale);
@@ -56,9 +56,11 @@ float3 BiCubicInterpolate(float2 pos)   // x is height, (y,z) is gradient // bic
     float2 finalHeightAndYGradient = CubicInterpolate(heights[0].x, heights[1].x, heights[2].x, heights[3].x, percentAcross.y);
     
     float finalXGradient = CubicInterpolate(heights[0].y, heights[1].y, heights[2].y, heights[3].y, percentAcross.y).x;
+    float2 gradient = float2(finalXGradient, finalHeightAndYGradient.y) * depth / (BaseMapScale);
+    float slope = length(gradient);
+    float slopeRatio = saturate(slope / 3);
     
-    
-    return float3(finalHeightAndYGradient.x, finalXGradient / BaseMapScale, finalHeightAndYGradient.y / BaseMapScale);
+    return float2(finalHeightAndYGradient.x, slopeRatio);
 }
 
 [numthreads(16,16,1)]
@@ -80,14 +82,13 @@ void MidMapGen(uint3 id : SV_DispatchThreadID)
     {
     float2 pos = workMapPosition + (id.xy * workMapScale);
     
-    float3 ans = BiCubicInterpolate(pos);
+    float2 ans = BiCubicInterpolate(pos);
     float height = ans.x;
-    float2 gradient = ans.yz;
+        float gradient = saturate(pow(1 - ans.y, workMapGradientDampening));
     
     
-        // Add small epsilon to prevent division by zero
-        float gradientEffect = (length(gradient) * workMapGradientDampening * depth) + 1;
-        Result[id.y * WorkMapSize + id.x] = height + ((GenRandomPoint(pos + workMapoffset) * workMapAmplitude) / gradientEffect);
+        
+        Result[id.y * WorkMapSize + id.x] = height + ((GenRandomPoint(pos + workMapoffset) * workMapAmplitude) * gradient);
     }
 }
 [numthreads(16, 16, 1)]
@@ -95,12 +96,16 @@ void FinalMapGen(uint3 id : SV_DispatchThreadID)
 {
     if (id.y < (uint) WorkMapSize && id.x < (uint) WorkMapSize)
     {
-    float2 pos = workMapPosition + (id.yx * workMapScale);
+        float2 pos = workMapPosition + (id.yx * workMapScale);
     
-    float height = BiCubicInterpolate(pos).x;
-   
+        float2 ans = BiCubicInterpolate(pos);
+        float height = ans.x;
+        float gradient = saturate(pow(1 - ans.y, workMapGradientDampening));
     
-        Result[id.y * (WorkMapSize) + id.x] = height; // this is correct
+    
+        
+        Result[id.y * WorkMapSize + id.x] = (height * gradient);
+        //(0.5f * height) + (0.5f * height * gradient);
     }
 }
 StructuredBuffer<float4> BiomeMap;
