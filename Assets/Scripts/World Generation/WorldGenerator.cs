@@ -80,7 +80,7 @@ public class WorldGenerator : MonoBehaviour
             gradientDampening = copyFrom.gradientDampening;
             heightData = copyFrom.heightData;
         }
-        //public Texture2D debugMap;
+        public Texture2D debugMap;
     }
 
     [System.Serializable]
@@ -232,7 +232,7 @@ public class WorldGenerator : MonoBehaviour
         public MapLayer ML;
     }
 
-    [HideInInspector]
+   // [HideInInspector]
     public workingLayer WL;
 
 
@@ -781,17 +781,17 @@ IEnumerator loadChunks()
         compNoise.Dispatch(0, mapsize + 1, mapsize + 1, 1);
 
         heightBuffer.GetData(workMap.heightData);
-      //  Texture2D TM = new Texture2D(mapsize * threadCountAndMapMult, mapsize * threadCountAndMapMult);
-      //  for (int x=0; x< mapsize * threadCountAndMapMult; x++)
-      //  {
-      //      for (int y = 0; y < mapsize * threadCountAndMapMult; y++)
-      //      {
-      //          float f = workMap.heightData[y * mapsize * threadCountAndMapMult + x];
-      //          TM.SetPixel(y, x, new Color(f,f,f));
-      //      }
-      //  }
-      //  TM.Apply();
-      //  workMap.debugMap = TM;
+        Texture2D TM = new Texture2D(mapsize * threadCountAndMapMult, mapsize * threadCountAndMapMult);
+        for (int x=0; x< mapsize * threadCountAndMapMult; x++)
+        {
+            for (int y = 0; y < mapsize * threadCountAndMapMult; y++)
+            {
+                float f = workMap.heightData[y * mapsize * threadCountAndMapMult + x];
+                TM.SetPixel(y, x, new Color(f,f,f));
+            }
+        }
+        TM.Apply();
+        workMap.debugMap = TM;
         heightBuffer.Release();
     }
     public void setShaderValuesK2(Map lastMap, Map workMap, Chunk chunk, float depth)
@@ -836,17 +836,17 @@ IEnumerator loadChunks()
         compNoise.Dispatch(1, mapsize + 1, mapsize + 1, 1);
 
         heightBuffer.GetData(workMap.heightData);
-        //Texture2D TM = new Texture2D(mapsize * threadCountAndMapMult, mapsize * threadCountAndMapMult);
-        //for (int x = 0; x < mapsize * threadCountAndMapMult; x++)
-        //{
-        //    for (int y = 0; y < mapsize * threadCountAndMapMult; y++)
-        //    {
-        //        float f = workMap.heightData[y * mapsize * threadCountAndMapMult + x];
-        //        TM.SetPixel(y, x, new Color(f, f, f));
-        //    }
-        //}
-        //TM.Apply();
-        //workMap.debugMap = TM;
+        Texture2D TM = new Texture2D(mapsize * threadCountAndMapMult, mapsize * threadCountAndMapMult);
+        for (int x = 0; x < mapsize * threadCountAndMapMult; x++)
+        {
+            for (int y = 0; y < mapsize * threadCountAndMapMult; y++)
+            {
+                float f = Mathf.Abs(workMap.heightData[y * mapsize * threadCountAndMapMult + x]-(0.0f));
+                TM.SetPixel(y, x, new Color(f, f, f));
+            }
+        }
+        TM.Apply();
+        workMap.debugMap = TM;
         lastHeightBuffer.Release();
         heightBuffer.Release();
     }
