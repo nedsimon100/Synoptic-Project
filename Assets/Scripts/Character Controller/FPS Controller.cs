@@ -54,7 +54,7 @@ public class FPSController : MonoBehaviour
         Vector3 moveSpeed = (transform.forward * moveDir.y * currspeed) + (transform.right * moveDir.x * currspeed);
         if (physics)
         {
-            rb.linearVelocity = new Vector3(moveSpeed.x, rb.linearVelocity.y, moveSpeed.z);
+            rb.velocity = new Vector3(moveSpeed.x, rb.velocity.y, moveSpeed.z);
         }
         else
         {

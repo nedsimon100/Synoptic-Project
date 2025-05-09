@@ -15,11 +15,11 @@ public class Debuggingmovement : MonoBehaviour
     {
         if (Input.GetKey(KeyCode.LeftShift))
         {
-            rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * sprintSpeed;
+        //    rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * sprintSpeed;
         }
         else
         {
-            rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * baseSpeed;
+        //    rb.linearVelocity = new Vector2(Input.GetAxis("Horizontal"), Input.GetAxis("Vertical")).normalized * baseSpeed;
         }
     }
 }

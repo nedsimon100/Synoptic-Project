@@ -464,7 +464,6 @@ public class WorldGenerator : MonoBehaviour
         TerrainLayer firstLayer = new TerrainLayer();
         firstLayer.smoothness = 0;
         firstLayer.metallic = 0;
-        firstLayer.smoothnessSource = 0;
         firstLayer.tileSize = new Vector2(chunkSize + 1, chunkSize + 1);
         
 
@@ -576,7 +575,6 @@ public class WorldGenerator : MonoBehaviour
                     tl.smoothness = 0;
                     tl.metallic = 0;
                     tl.tileSize = new Vector2(hl.TextureScale, hl.TextureScale);
-                    tl.smoothnessSource = 0;
                     biomeLayer.Add(tl);
                     SplatMap.Add(sm);
                     layerIndex = biomeLayer.Count - 1;
@@ -600,7 +598,6 @@ public class WorldGenerator : MonoBehaviour
                         tl.smoothness = 0;
                         tl.metallic = 0;
                         tl.tileSize = new Vector2(hl2.TextureScale, hl2.TextureScale);
-                        tl.smoothnessSource = 0;
                         biomeLayer.Add(tl);
                         SplatMap.Add(sm);
                         layerIndex2 = biomeLayer.Count - 1;
